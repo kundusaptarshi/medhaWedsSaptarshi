@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { MessageCircle, Phone, X } from 'lucide-react';
+import { MessageCircle, Phone } from 'lucide-react';
 import {
   getPhoneLinkAttributes,
   type FamilyContactGroup,
@@ -44,7 +44,7 @@ export const FamilyContactModal: React.FC<FamilyContactModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Royal Maroon Header */}
-        <div className="flex items-center justify-between gap-3 bg-[#4D0A14] text-[#FAF5EC] px-4 sm:px-5 py-3.5 sm:py-4 border-b border-[#DFBE7B]/25 shrink-0">
+        <div className="bg-[#4D0A14] text-[#FAF5EC] px-4 sm:px-5 py-3.5 sm:py-4 border-b border-[#DFBE7B]/25 shrink-0">
           <div className="min-w-0">
             <p className="text-[10px] sm:text-[11px] font-medium tracking-[0.2em] uppercase text-[#DFBE7B]/90">
               {family.subtitle}
@@ -56,14 +56,6 @@ export const FamilyContactModal: React.FC<FamilyContactModalProps> = ({
               {family.title}
             </h2>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label={`Close ${family.title} contacts`}
-            className="inline-flex items-center justify-center min-w-[38px] min-h-[38px] rounded-lg border border-[#DFBE7B]/35 text-[#FAF5EC] hover:bg-[#63111D] transition-colors cursor-pointer shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#DFBE7B]"
-          >
-            <X className="w-4 h-4" aria-hidden="true" />
-          </button>
         </div>
 
         {/* Contacts List — compact so all 3 fit on phone screens without scrolling */}

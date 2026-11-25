@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Download, X } from 'lucide-react';
+import { Download } from 'lucide-react';
 import type { InvitationRecord, WeddingEvent } from '../types';
 import {
   buildInvitationUrl,
@@ -151,7 +151,7 @@ export const BulkDownloadQrModal: React.FC<BulkDownloadQrModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-start justify-between gap-4 bg-[#FFF9E2] px-6 pt-5 pb-4 border-b border-[#E6D194]">
+        <div className="bg-[#FFF9E2] px-6 pt-5 pb-4 border-b border-[#E6D194]">
           <div>
             <h2
               id="bulk-qr-dialog-title"
@@ -163,15 +163,6 @@ export const BulkDownloadQrModal: React.FC<BulkDownloadQrModalProps> = ({
               Uncheck any invitations you want to skip, then download all selected QRs as a ZIP file.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={downloading}
-            aria-label="Close download QRs dialog"
-            className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#E6D194] text-[#6B5457] hover:text-[#4D0A14] hover:border-[#9E2A2B]/40 disabled:opacity-50 transition-colors cursor-pointer shrink-0"
-          >
-            <X className="w-4 h-4" aria-hidden="true" />
-          </button>
         </div>
 
         {/* Selection Summary Bar */}

@@ -12,13 +12,13 @@ import {
   Phone,
   RotateCcw,
   Send,
-  X,
 } from 'lucide-react';
 import { FAMILY_CONTACTS, type FamilyKey } from '../data/familyContacts';
 import {
   ALL_WEDDING_EVENT_DETAILS,
   resolveEventDetails,
 } from '../data/weddingEventDetails';
+import { formatFirestoreUserMessage } from '../firebase';
 import {
   fetchPublicInvitationWithEvents,
   submitInvitationRsvp,
@@ -1016,9 +1016,10 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
       setRsvpDialogOpen(false);
     } catch (err) {
       setRsvpErrors([
-        err instanceof Error
-          ? err.message
-          : 'Unable to save your RSVP right now. Please try again.',
+        formatFirestoreUserMessage(
+          err,
+          'Unable to save your RSVP right now. Please try again.'
+        ),
       ]);
     } finally {
       setSubmittingRsvp(false);
@@ -1612,14 +1613,14 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
               ref={(el) => {
                 stageRefs.current['us-through-the-years'] = el;
               }}
-              className="w-full max-w-[920px] mx-auto min-h-full [@media(min-width:768px)_and_(min-height:580px)]:h-full overflow-x-hidden overflow-y-clip px-4 sm:px-6 lg:px-8 pt-14 sm:pt-[68px] pb-8 sm:pb-6 [@media(min-width:768px)_and_(max-height:740px)]:pt-6 [@media(min-width:768px)_and_(max-height:740px)]:pb-4 flex flex-col"
+              className="w-full max-w-[920px] mx-auto min-h-full [@media(min-width:768px)_and_(min-height:580px)]:h-full overflow-x-hidden overflow-y-clip px-4 sm:px-6 lg:px-8 pt-10 sm:pt-12 pb-6 sm:pb-6 [@media(min-width:768px)_and_(max-height:740px)]:pt-5 [@media(min-width:768px)_and_(max-height:740px)]:pb-3 flex flex-col"
             >
               <div className="my-auto w-full flex flex-col items-center">
                 <div
                   data-parallax-section="us-through-the-years"
                   data-parallax-speed="0.12"
                   data-parallax-max="36"
-                  className="text-center mb-4 sm:mb-6 shrink-0"
+                  className="text-center mb-3 sm:mb-4 shrink-0"
                 >
                   <h2 className="font-editorial text-[34px] sm:text-5xl font-normal text-[#231618] leading-tight">
                     Us Through{' '}
@@ -2405,7 +2406,7 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
             onClick={(e) => e.stopPropagation()}
           >
             {/* Dialog Header */}
-            <div className="flex items-start justify-between gap-4 bg-[#4D0A14] text-[#FAF5EC] px-6 py-5 border-b border-[#DFBE7B]/25">
+            <div className="bg-[#4D0A14] text-[#FAF5EC] px-6 py-5 border-b border-[#DFBE7B]/25">
               <div>
                 <p className="text-[11px] font-semibold tracking-[0.24em] uppercase text-[#DFBE7B]">
                   RSVP · {addressedName}
@@ -2421,15 +2422,6 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                   clear it.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => setRsvpDialogOpen(false)}
-                disabled={submittingRsvp}
-                aria-label="Close RSVP dialog"
-                className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#DFBE7B]/35 text-[#FAF5EC] hover:bg-[#63111D] disabled:opacity-50 transition-colors cursor-pointer shrink-0"
-              >
-                <X className="w-4 h-4" aria-hidden="true" />
-              </button>
             </div>
 
             {/* Dialog Scrollable Form Body */}

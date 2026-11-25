@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Check, Edit3, RotateCcw, Search, X } from 'lucide-react';
+import { Check, Edit3, RotateCcw, Search } from 'lucide-react';
+import { formatFirestoreUserMessage } from '../firebase';
 import type {
   EventRsvpDraft,
   EventRsvpEntry,
@@ -179,7 +180,7 @@ export const CheckRsvpModal: React.FC<CheckRsvpModalProps> = ({
       setDraftByEvent({});
     } catch (err) {
       setSaveError(
-        err instanceof Error ? err.message : 'Unable to save RSVP right now.'
+        formatFirestoreUserMessage(err, 'Unable to save RSVP right now.')
       );
     } finally {
       setSavingSlug(null);
@@ -201,7 +202,7 @@ export const CheckRsvpModal: React.FC<CheckRsvpModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-start justify-between gap-4 bg-[#4D0A14] text-[#FAF5EC] px-6 py-5 border-b border-[#DFBE7B]/25">
+        <div className="bg-[#4D0A14] text-[#FAF5EC] px-6 py-5 border-b border-[#DFBE7B]/25">
           <div>
             <p className="text-[11px] font-medium tracking-[0.2em] uppercase text-[#DFBE7B]">
               Per-Event Guest Responses
@@ -217,15 +218,6 @@ export const CheckRsvpModal: React.FC<CheckRsvpModalProps> = ({
               {selectedEventTitle ? ` · Filtered to ${selectedEventTitle}` : ''}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={Boolean(savingSlug)}
-            aria-label="Close RSVP overview"
-            className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#DFBE7B]/35 text-[#FAF5EC] hover:bg-[#63111D] disabled:opacity-50 transition-colors cursor-pointer shrink-0"
-          >
-            <X className="w-4 h-4" aria-hidden="true" />
-          </button>
         </div>
 
         {/* Search + Side Filter + Event Filter */}
@@ -669,6 +661,18 @@ export const CheckRsvpModal: React.FC<CheckRsvpModalProps> = ({
               );
             })
           )}
+        </div>
+        {/* Footer Action */}
+        <div className="px-6 py-3.5 bg-[#FDF3D0] border-t border-[#E6D194] flex justify-end shrink-0">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={Boolean(savingSlug)}
+            data-testid="check-rsvp-modal-close"
+            className="min-h-[40px] rounded-lg bg-[#4D0A14] px-5 py-2 text-xs font-semibold tracking-[0.14em] uppercase text-[#FAF5EC] hover:bg-[#63111D] disabled:opacity-60 transition-colors cursor-pointer whitespace-nowrap shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#DFBE7B]"
+          >
+            Close
+          </button>
         </div>
       </div>
     </div>

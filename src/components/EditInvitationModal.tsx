@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Plus, Save, X } from 'lucide-react';
+import { formatFirestoreUserMessage } from '../firebase';
 import type { GuestSide, InvitationRecord, WeddingEvent } from '../types';
 import {
   buildBrandedDisplayPath,
@@ -117,7 +118,7 @@ export const EditInvitationModal: React.FC<EditInvitationModalProps> = ({
       await onSave(invitation.slug, side, cleanNames, withFamily, validEventIds);
     } catch (err) {
       setValidationErrors([
-        err instanceof Error ? err.message : 'Unable to save invitation changes.',
+        formatFirestoreUserMessage(err, 'Unable to save invitation changes.'),
       ]);
     }
   };
@@ -137,7 +138,7 @@ export const EditInvitationModal: React.FC<EditInvitationModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-start justify-between gap-4 bg-[#FFF9E2] px-6 pt-6 pb-4 border-b border-[#E6D194]">
+        <div className="sticky top-0 z-10 bg-[#FFF9E2] px-6 pt-6 pb-4 border-b border-[#E6D194]">
           <div>
             <h2
               id="edit-invitation-title"
@@ -149,15 +150,6 @@ export const EditInvitationModal: React.FC<EditInvitationModalProps> = ({
               Update guest side, names, or celebrations. The permanent URL and QR code stay unchanged.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onDiscard}
-            disabled={saving}
-            aria-label="Close edit dialog"
-            className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#E6D194] text-[#6B5457] hover:text-[#4D0A14] hover:border-[#9E2A2B]/40 disabled:opacity-50 transition-colors cursor-pointer shrink-0"
-          >
-            <X className="w-4 h-4" aria-hidden="true" />
-          </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5" noValidate>

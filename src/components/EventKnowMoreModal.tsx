@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { X } from 'lucide-react';
 import {
   formatEventLocationLine,
   type WeddingEventDetail,
@@ -52,7 +51,7 @@ export const EventKnowMoreModal: React.FC<EventKnowMoreModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Royal Maroon Header */}
-        <div className="flex items-start justify-between gap-4 bg-[#4D0A14] text-[#FAF5EC] px-6 py-5 border-b border-[#DFBE7B]/25 shrink-0">
+        <div className="bg-[#4D0A14] text-[#FAF5EC] px-6 py-5 border-b border-[#DFBE7B]/25 shrink-0">
           <div className="min-w-0">
             <p
               data-testid="event-details-meta-line"
@@ -89,14 +88,6 @@ export const EventKnowMoreModal: React.FC<EventKnowMoreModalProps> = ({
               </p>
             )}
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label={`Close ${event.title} details`}
-            className="inline-flex items-center justify-center min-w-[40px] min-h-[40px] rounded-lg border border-[#DFBE7B]/35 text-[#FAF5EC] hover:bg-[#63111D] transition-colors cursor-pointer shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#DFBE7B]"
-          >
-            <X className="w-4 h-4" aria-hidden="true" />
-          </button>
         </div>
 
         {/* Scrollable Cultural Description + Dress Code */}

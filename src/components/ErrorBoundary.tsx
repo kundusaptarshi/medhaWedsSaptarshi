@@ -19,9 +19,15 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     let readable = error.message || 'An unexpected error occurred.';
     try {
-      const parsed = JSON.parse(error.message) as { error?: string; operationType?: string; path?: string };
+      const parsed = JSON.parse(error.message) as {
+        code?: string | null;
+        error?: string;
+        operationType?: string;
+        path?: string;
+      };
       if (parsed.error) {
-        readable = `Database access error (${parsed.operationType ?? 'operation'} on ${parsed.path ?? 'collection'}): ${parsed.error}`;
+        const codeTag = parsed.code ? ` [${parsed.code}]` : '';
+        readable = `Database access error${codeTag} (${parsed.operationType ?? 'operation'} on ${parsed.path ?? 'collection'}): ${parsed.error}`;
       }
     } catch {
       // Plain error string

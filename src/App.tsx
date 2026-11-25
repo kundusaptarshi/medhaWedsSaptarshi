@@ -13,6 +13,7 @@ import {
 } from './components/InvitationForm';
 import { InvitationListPanel } from './components/InvitationListPanel';
 import { StudioFloatingSparkles } from './components/StudioFloatingSparkles';
+import { formatFirestoreUserMessage } from './firebase';
 import {
   createGenericInvitation,
   createInvitation,
@@ -201,9 +202,7 @@ function StudioDashboard({ onPreviewInvite }: StudioDashboardProps) {
         showToast('Generic invitation link and QR generated');
       } catch (err) {
         setValidationErrors([
-          err instanceof Error
-            ? err.message
-            : 'Unable to generate generic invitation.',
+          formatFirestoreUserMessage(err, 'Unable to generate generic invitation.'),
         ]);
       } finally {
         setIsSubmitting(false);
@@ -244,7 +243,7 @@ function StudioDashboard({ onPreviewInvite }: StudioDashboardProps) {
       resetForm();
     } catch (err) {
       setValidationErrors([
-        err instanceof Error ? err.message : 'Unable to save invitation.',
+        formatFirestoreUserMessage(err, 'Unable to save invitation.'),
       ]);
     } finally {
       setIsSubmitting(false);

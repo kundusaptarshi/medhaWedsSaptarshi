@@ -1,4 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
+import {
+  evaluateBackgroundPause,
+  evaluateForegroundResume,
+  evaluateManualMuteToggle,
+} from '../utils/musicVisibility';
 import { GramophoneIcon } from './InviteIllustrations';
 
 /**
@@ -11,6 +16,7 @@ const WEDDING_MUSIC_SRC: string | null =
 
 interface AmbientEngine {
   start: () => Promise<boolean>;
+  pause: () => void;
   setMuted: (muted: boolean) => void;
   dispose: () => void;
 }
@@ -89,6 +95,15 @@ function createAmbientAudioEngine(): AmbientEngine | null {
         return false;
       }
     },
+    pause() {
+      if (timerId !== null) {
+        window.clearInterval(timerId);
+        timerId = null;
+      }
+      if (ctx && ctx.state === 'running') {
+        void ctx.suspend().catch(() => {});
+      }
+    },
     setMuted(muted: boolean) {
       isMuted = muted;
       if (masterGain && ctx) {
@@ -122,8 +137,10 @@ interface FloatingMusicPlayerProps {
 
 /**
  * Background wedding music controller with a floating vintage Gramophone button.
- * Music stays silent on the curtain stage and begins cleanly when startPlayback()
- * is invoked upon clicking the wax seal.
+ * Music stays silent on the curtain stage, begins cleanly when startPlayback()
+ * is invoked upon clicking the wax seal, and automatically pauses/resumes on
+ * tab switches, browser minimizes, or mobile lock/app switches while respecting
+ * manual mute/pause.
  */
 export const FloatingMusicPlayer = React.forwardRef<
   FloatingMusicPlayerHandle,
@@ -133,6 +150,9 @@ export const FloatingMusicPlayer = React.forwardRef<
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackTriggered, setPlaybackTriggered] = useState(false);
   const mutedRef = useRef(false);
+  const playingRef = useRef(false);
+  const wasPlayingBeforeHideRef = useRef(false);
+  const pendingResumeGestureRef = useRef(false);
   const disposedRef = useRef(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const engineRef = useRef<AmbientEngine | null>(null);
@@ -140,6 +160,11 @@ export const FloatingMusicPlayer = React.forwardRef<
   useEffect(() => {
     mutedRef.current = isMuted;
   }, [isMuted]);
+
+  const setPlayingState = React.useCallback((nextPlaying: boolean) => {
+    playingRef.current = nextPlaying;
+    setIsPlaying(nextPlaying);
+  }, []);
 
   const startPlaybackInternal = React.useCallback(async (): Promise<boolean> => {
     if (disposedRef.current || mutedRef.current) return false;
@@ -149,7 +174,10 @@ export const FloatingMusicPlayer = React.forwardRef<
       try {
         audioRef.current.muted = false;
         await audioRef.current.play();
-        if (!disposedRef.current) setIsPlaying(true);
+        if (!disposedRef.current) {
+          pendingResumeGestureRef.current = false;
+          setPlayingState(true);
+        }
         return true;
       } catch {
         return false;
@@ -161,11 +189,12 @@ export const FloatingMusicPlayer = React.forwardRef<
     }
     const started = await engineRef.current?.start();
     if (started && !disposedRef.current) {
-      setIsPlaying(true);
+      pendingResumeGestureRef.current = false;
+      setPlayingState(true);
       return true;
     }
     return false;
-  }, []);
+  }, [setPlayingState]);
 
   React.useImperativeHandle(
     ref,
@@ -174,6 +203,117 @@ export const FloatingMusicPlayer = React.forwardRef<
     }),
     [startPlaybackInternal]
   );
+
+  // Auto-pause on tab switch / minimize / mobile lock or close, and auto-resume on return
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+    const getCurrentPlaybackActive = (): boolean => {
+      if (WEDDING_MUSIC_SRC && audioRef.current) {
+        return !audioRef.current.paused && !audioRef.current.muted;
+      }
+      return playingRef.current && !mutedRef.current;
+    };
+
+    const pauseForBackground = () => {
+      if (disposedRef.current) return;
+      const result = evaluateBackgroundPause({
+        isMuted: mutedRef.current,
+        isPlaying: getCurrentPlaybackActive(),
+        wasPlayingBeforeHide: wasPlayingBeforeHideRef.current,
+      });
+      wasPlayingBeforeHideRef.current = result.nextState.wasPlayingBeforeHide;
+      pendingResumeGestureRef.current = false;
+
+      if (WEDDING_MUSIC_SRC && audioRef.current && !audioRef.current.paused) {
+        audioRef.current.pause();
+      }
+      if (!WEDDING_MUSIC_SRC) {
+        engineRef.current?.pause();
+      }
+      setPlayingState(false);
+    };
+
+    const resumeFromBackground = () => {
+      if (disposedRef.current) return;
+      const isHidden =
+        document.hidden || document.visibilityState === 'hidden';
+      const result = evaluateForegroundResume(
+        {
+          isMuted: mutedRef.current,
+          isPlaying: getCurrentPlaybackActive(),
+          wasPlayingBeforeHide: wasPlayingBeforeHideRef.current,
+        },
+        isHidden
+      );
+      if (result.action !== 'resume') return;
+
+      wasPlayingBeforeHideRef.current = result.nextState.wasPlayingBeforeHide;
+      void startPlaybackInternal().then((started) => {
+        if (!started && !disposedRef.current && !mutedRef.current) {
+          // Some mobile browsers require a user gesture to resume audio after unlocking
+          pendingResumeGestureRef.current = true;
+        }
+      });
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden || document.visibilityState === 'hidden') {
+        pauseForBackground();
+      } else {
+        resumeFromBackground();
+      }
+    };
+
+    const handlePageHide = () => {
+      pauseForBackground();
+    };
+
+    const handlePageShow = () => {
+      resumeFromBackground();
+    };
+
+    const handleWindowBlur = () => {
+      pauseForBackground();
+    };
+
+    const handleWindowFocus = () => {
+      resumeFromBackground();
+    };
+
+    const handleResumeGestureFallback = () => {
+      if (
+        !pendingResumeGestureRef.current ||
+        mutedRef.current ||
+        document.hidden ||
+        disposedRef.current
+      ) {
+        return;
+      }
+      pendingResumeGestureRef.current = false;
+      void startPlaybackInternal();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('pagehide', handlePageHide);
+    window.addEventListener('pageshow', handlePageShow);
+    window.addEventListener('blur', handleWindowBlur);
+    window.addEventListener('focus', handleWindowFocus);
+    window.addEventListener('pointerdown', handleResumeGestureFallback, {
+      passive: true,
+    });
+    window.addEventListener('keydown', handleResumeGestureFallback);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('pagehide', handlePageHide);
+      window.removeEventListener('pageshow', handlePageShow);
+      window.removeEventListener('blur', handleWindowBlur);
+      window.removeEventListener('focus', handleWindowFocus);
+      window.removeEventListener('pointerdown', handleResumeGestureFallback);
+      window.removeEventListener('keydown', handleResumeGestureFallback);
+    };
+  }, [startPlaybackInternal, setPlayingState]);
 
   useEffect(() => {
     disposedRef.current = false;
@@ -218,20 +358,31 @@ export const FloatingMusicPlayer = React.forwardRef<
 
   const handleToggleMute = async () => {
     const nextMuted = !isMuted;
-    setIsMuted(nextMuted);
-    mutedRef.current = nextMuted;
+    const manualState = evaluateManualMuteToggle(
+      {
+        isMuted,
+        isPlaying: playingRef.current,
+        wasPlayingBeforeHide: wasPlayingBeforeHideRef.current,
+      },
+      nextMuted
+    );
+
+    setIsMuted(manualState.isMuted);
+    mutedRef.current = manualState.isMuted;
+    wasPlayingBeforeHideRef.current = manualState.wasPlayingBeforeHide;
+    pendingResumeGestureRef.current = false;
 
     if (WEDDING_MUSIC_SRC && audioRef.current) {
       audioRef.current.muted = nextMuted;
       if (nextMuted) {
         audioRef.current.pause();
-        setIsPlaying(false);
+        setPlayingState(false);
       } else {
         try {
           await audioRef.current.play();
-          setIsPlaying(true);
+          setPlayingState(true);
         } catch {
-          setIsPlaying(false);
+          setPlayingState(false);
         }
       }
       return;
@@ -243,10 +394,11 @@ export const FloatingMusicPlayer = React.forwardRef<
     engineRef.current?.setMuted(nextMuted);
 
     if (nextMuted) {
-      setIsPlaying(false);
+      engineRef.current?.pause();
+      setPlayingState(false);
     } else {
       const started = await engineRef.current?.start();
-      setIsPlaying(Boolean(started));
+      setPlayingState(Boolean(started));
     }
   };
 
