@@ -1,0 +1,157 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Primitive Helpers ---
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidSlug(slug) {
+      return slug is string && slug.size() >= 2 && slug.size() <= 100 && slug.matches('^[a-z0-9\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- Per-Event RSVP Validation Blueprint ---
+    function isValidEventRsvpEntry(entry, allowAlcohol) {
+      return entry is map &&
+        entry.keys().hasAll(['attending', 'headcount', 'foodPreference', 'alcoholPreference']) &&
+        entry.keys().hasOnly(['attending', 'headcount', 'foodPreference', 'alcoholPreference']) &&
+        entry.attending is string &&
+        entry.attending.size() >= 1 &&
+        entry.attending.size() <= 20 &&
+        entry.attending in ['coming', 'not_coming'] &&
+        (
+          (
+            entry.attending == 'coming' &&
+            entry.headcount is int &&
+            entry.headcount >= 1 &&
+            entry.headcount <= 50 &&
+            (
+              entry.foodPreference == null ||
+              (
+                entry.foodPreference is string &&
+                entry.foodPreference.size() >= 1 &&
+                entry.foodPreference.size() <= 20 &&
+                entry.foodPreference in ['veg', 'non_veg']
+              )
+            ) &&
+            (
+              entry.alcoholPreference == null ||
+              (
+                allowAlcohol &&
+                entry.alcoholPreference is string &&
+                entry.alcoholPreference.size() >= 1 &&
+                entry.alcoholPreference.size() <= 20 &&
+                entry.alcoholPreference in ['alcohol', 'no_alcohol']
+              )
+            )
+          ) || (
+            entry.attending == 'not_coming' &&
+            entry.headcount == null &&
+            entry.foodPreference == null &&
+            entry.alcoholPreference == null
+          )
+        );
+    }
+
+    function isValidRsvp(rsvp) {
+      return rsvp == null || (
+        rsvp is map &&
+        rsvp.keys().hasAll(['byEvent', 'respondedAt']) &&
+        rsvp.keys().hasOnly(['byEvent', 'respondedAt']) &&
+        rsvp.byEvent is map &&
+        rsvp.byEvent.keys().hasOnly([
+          'mehendi-cocktail', 'aiburobhat', 'haldi', 'wedding', 'boubhat', 'reception'
+        ]) &&
+        (!('mehendi-cocktail' in rsvp.byEvent) || isValidEventRsvpEntry(rsvp.byEvent['mehendi-cocktail'], true)) &&
+        (!('aiburobhat' in rsvp.byEvent) || isValidEventRsvpEntry(rsvp.byEvent['aiburobhat'], false)) &&
+        (!('haldi' in rsvp.byEvent) || isValidEventRsvpEntry(rsvp.byEvent['haldi'], false)) &&
+        (!('wedding' in rsvp.byEvent) || isValidEventRsvpEntry(rsvp.byEvent['wedding'], false)) &&
+        (!('boubhat' in rsvp.byEvent) || isValidEventRsvpEntry(rsvp.byEvent['boubhat'], false)) &&
+        (!('reception' in rsvp.byEvent) || isValidEventRsvpEntry(rsvp.byEvent['reception'], false)) &&
+        rsvp.respondedAt is timestamp
+      );
+    }
+
+    // --- Validation Blueprint ---
+    function isValidInvitation(data, slug) {
+      return data.keys().hasAll([
+          'slug', 'side', 'guestNames', 'withFamily', 'displayGuestName',
+          'eventIds', 'createdBy', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'slug', 'side', 'guestNames', 'withFamily', 'displayGuestName',
+          'eventIds', 'createdBy', 'createdAt', 'updatedAt', 'rsvp', 'isGeneric'
+        ]) &&
+        data.slug is string && data.slug == slug && isValidSlug(data.slug) &&
+        data.side is string && data.side.size() >= 1 && data.side.size() <= 20 && data.side in ['bride', 'groom'] &&
+        data.guestNames is list &&
+        data.guestNames.size() >= 1 && data.guestNames.size() <= 20 &&
+        data.guestNames[0] is string &&
+        data.guestNames[0].size() >= 1 && data.guestNames[0].size() <= 120 &&
+        data.withFamily is bool &&
+        data.displayGuestName is string &&
+        data.displayGuestName.size() >= 1 && data.displayGuestName.size() <= 300 &&
+        data.eventIds is list &&
+        data.eventIds.size() >= 1 && data.eventIds.size() <= 20 &&
+        data.eventIds[0] is string &&
+        data.eventIds[0].size() >= 1 && data.eventIds[0].size() <= 80 &&
+        data.createdBy is string && isValidId(data.createdBy) &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp &&
+        (!('rsvp' in data) || isValidRsvp(data.rsvp)) &&
+        (!('isGeneric' in data) || data.isGeneric is bool);
+    }
+
+    function isGenericImmutable() {
+      return (!('isGeneric' in incoming()) && !('isGeneric' in existing())) ||
+        ('isGeneric' in incoming() && 'isGeneric' in existing() && incoming().isGeneric == existing().isGeneric);
+    }
+
+    // --- Collection: invitations (no-auth studio per user request, schema-hardened) ---
+    match /invitations/{slug} {
+      allow get: if isValidSlug(slug);
+      allow list: if resource.data.createdBy == 'studio-host';
+      allow create: if isValidSlug(slug) &&
+        isValidInvitation(incoming(), slug) &&
+        incoming().createdBy == 'studio-host' &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        (!('rsvp' in incoming()) || incoming().rsvp == null);
+      allow update: if isValidSlug(slug) &&
+        isValidInvitation(incoming(), slug) &&
+        incoming().slug == existing().slug &&
+        incoming().createdBy == existing().createdBy &&
+        incoming().createdAt == existing().createdAt &&
+        isGenericImmutable() &&
+        incoming().updatedAt == request.time &&
+        (
+          // Action 1: Host edits personalized invitation details (guest names, side, events)
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'side', 'guestNames', 'withFamily', 'displayGuestName', 'eventIds', 'updatedAt'
+          ]) ||
+          // Action 2: Guest or host submits/updates/clears per-event RSVP responses on personalized invites only
+          (
+            (!('isGeneric' in existing()) || existing().isGeneric == false) &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['rsvp', 'updatedAt']) &&
+            'rsvp' in incoming() &&
+            (incoming().rsvp == null || incoming().rsvp.respondedAt == request.time)
+          )
+        );
+      allow delete: if isValidSlug(slug);
+    }
+  }
+}

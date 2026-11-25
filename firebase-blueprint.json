@@ -1,0 +1,128 @@
+{
+  "entities": {
+    "Invitation": {
+      "title": "Personalized Wedding Invitation",
+      "description": "A unique, shareable guest invitation tied to a permanent URL slug and static QR code.",
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100,
+          "pattern": "^[a-z0-9\\-]+$",
+          "description": "Immutable unique URL slug matching the Firestore document ID."
+        },
+        "side": {
+          "type": "string",
+          "enum": ["bride", "groom"],
+          "description": "Whether the guest is invited from the Bride Side (Medha) or Groom Side (Saptarshi)."
+        },
+        "guestNames": {
+          "type": "array",
+          "description": "Ordered list of invitee names with exact spelling preserved (1 to 20 entries)."
+        },
+        "withFamily": {
+          "type": "boolean",
+          "description": "Whether '& Family' is included for this invitation."
+        },
+        "displayGuestName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "description": "Combined display string for cards, QR print layouts, and greetings."
+        },
+        "eventIds": {
+          "type": "array",
+          "description": "List of fixed WeddingEvent IDs this guest is invited to (1 to 20 entries)."
+        },
+        "createdBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Studio identifier."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Immutable server timestamp of creation."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of last modification."
+        },
+        "rsvp": {
+          "type": "object",
+          "$ref": "#/entities/InvitationRsvp",
+          "description": "Optional per-event guest RSVP responses keyed by event ID, or null when pending/cleared."
+        },
+        "isGeneric": {
+          "type": "boolean",
+          "description": "Optional flag indicating a nameless generic invitation backed by a unique DB guest code."
+        }
+      },
+      "required": [
+        "slug",
+        "side",
+        "guestNames",
+        "withFamily",
+        "displayGuestName",
+        "eventIds",
+        "createdBy",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "InvitationRsvp": {
+      "title": "Per-Event Guest RSVP Map",
+      "description": "Map of per-event RSVP entries (byEvent) and server respondedAt timestamp.",
+      "type": "object",
+      "properties": {
+        "byEvent": {
+          "type": "object",
+          "description": "Map keyed by fixed WeddingEvent IDs (mehendi-cocktail, aiburobhat, haldi, wedding, boubhat, reception) storing EventRsvpEntry objects."
+        },
+        "respondedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when RSVP was last submitted or updated."
+        }
+      },
+      "required": ["byEvent", "respondedAt"]
+    },
+    "EventRsvpEntry": {
+      "title": "Single Event RSVP Response",
+      "description": "Attendance, headcount, food preference, and alcohol preference for one wedding event.",
+      "type": "object",
+      "properties": {
+        "attending": {
+          "type": "string",
+          "enum": ["coming", "not_coming"],
+          "description": "Whether the guest is coming or not coming to this event."
+        },
+        "headcount": {
+          "type": "integer",
+          "description": "Number of guests attending (1-50 for withFamily invitations, 1 for individual invitations) when coming, or null when not_coming."
+        },
+        "foodPreference": {
+          "type": "string",
+          "enum": ["veg", "non_veg"],
+          "description": "Optional Veg or Non-Veg dining preference when coming (nullable if cleared or not_coming)."
+        },
+        "alcoholPreference": {
+          "type": "string",
+          "enum": ["alcohol", "no_alcohol"],
+          "description": "Optional Alcohol or No Alcohol preference ONLY for mehendi-cocktail when coming (always null for all other events or when cleared/not_coming)."
+        }
+      },
+      "required": ["attending", "headcount", "foodPreference", "alcoholPreference"]
+    }
+  },
+  "firestore": {
+    "/invitations/{slug}": {
+      "schema": { "$ref": "#/entities/Invitation" },
+      "description": "Personalized guest invitations keyed by immutable unique URL slug, including per-event RSVP details."
+    }
+  }
+}

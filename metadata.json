@@ -1,0 +1,6 @@
+{
+  "name": "Medha Weds Saptarshi — Wedding Invitation Studio",
+  "description": "Private luxury Bengali wedding invitation studio for generating personalized guest invitation URLs, static print-ready QR codes, and configurable celebration schedules.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,905 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cormorant Garamond", Georgia, Cambria, "Times New Roman", serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-maroon-950: #3a070e;
+  --color-maroon-900: #4d0a14;
+  --color-maroon-800: #63111d;
+  --color-maroon-700: #7f1924;
+  --color-crimson-700: #9e2a2b;
+  --color-crimson-600: #b23232;
+  --color-gold-500: #c89d54;
+  --color-gold-400: #dfbe7b;
+  --color-gold-300: #ead29f;
+  --color-ivory-50: #fdfaf5;
+  --color-ivory-100: #faf5ec;
+  --color-ivory-200: #f2e9da;
+  --color-ivory-300: #e5d7c1;
+  --color-ink-900: #231618;
+  --color-ink-700: #4c373a;
+  --color-ink-500: #7a6265;
+}
+
+@layer base {
+  html {
+    background-color: #FDF3D0;
+    color: var(--color-ink-900);
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: #FDF3D0;
+    background-image:
+      radial-gradient(ellipse at 50% 0%, rgba(255, 250, 224, 0.85) 0%, rgba(253, 243, 208, 0.35) 55%, rgba(246, 229, 172, 0.25) 100%),
+      radial-gradient(rgba(200, 157, 84, 0.13) 1.2px, transparent 0);
+    background-size: 100% 100%, 28px 28px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+}
+
+.font-editorial {
+  font-family: var(--font-serif);
+}
+
+/* Custom subtle warm scrollbar for the right management column */
+.studio-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.studio-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.studio-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(127, 25, 36, 0.18);
+  border-radius: 9999px;
+}
+
+.studio-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(127, 25, 36, 0.32);
+}
+
+@keyframes chakraSpinCw {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes chakraSpinCcw {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes ambientDrift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.72;
+  }
+  50% {
+    transform: translate3d(0, -10px, 0) scale(1.03);
+    opacity: 1;
+  }
+}
+
+.animate-chakra-cw {
+  animation: chakraSpinCw 58s linear infinite;
+}
+
+.animate-chakra-ccw {
+  animation: chakraSpinCcw 76s linear infinite;
+}
+
+.animate-chakra-slow {
+  animation: chakraSpinCw 96s linear infinite;
+}
+
+.animate-ambient-drift {
+  animation: ambientDrift 14s ease-in-out infinite;
+}
+
+@keyframes pastelAura {
+  0%, 100% {
+    transform: scale(1) translate3d(0, 0, 0);
+    opacity: 0.65;
+  }
+  50% {
+    transform: scale(1.1) translate3d(16px, -12px, 0);
+    opacity: 0.95;
+  }
+}
+
+@keyframes pastelAuraAlt {
+  0%, 100% {
+    transform: scale(1.06) translate3d(0, 0, 0);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(0.96) translate3d(-18px, 14px, 0);
+    opacity: 0.88;
+  }
+}
+
+@keyframes sparkleTwinkle {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(0.78) rotate(0deg);
+    opacity: 0.28;
+  }
+  50% {
+    transform: translate3d(0, -16px, 0) scale(1.18) rotate(22deg);
+    opacity: 0.9;
+  }
+}
+
+@keyframes studioMoteFloat {
+  0% {
+    transform: translate3d(0, 14px, 0) scale(0.85);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate3d(14px, -18px, 0) scale(1.08);
+    opacity: 0.85;
+  }
+  80% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate3d(-8px, -44px, 0) scale(0.82);
+    opacity: 0;
+  }
+}
+
+@keyframes studioPetalGlide {
+  0% {
+    transform: translate3d(0, -6vh, 0) rotate(0deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate3d(28px, 48vh, 0) rotate(130deg);
+    opacity: 0.48;
+  }
+  88% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: translate3d(-16px, 104vh, 0) rotate(275deg);
+    opacity: 0;
+  }
+}
+
+@keyframes goldShimmerSweep {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(220%, 0, 0);
+  }
+}
+
+@keyframes studioEnterUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes bokehRise {
+  0% {
+    transform: translate3d(0, 28px, 0) scale(0.75);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.65;
+  }
+  55% {
+    transform: translate3d(18px, -26px, 0) scale(1.12);
+    opacity: 0.8;
+  }
+  85% {
+    opacity: 0.45;
+  }
+  100% {
+    transform: translate3d(-12px, -74px, 0) scale(0.82);
+    opacity: 0;
+  }
+}
+
+@keyframes lotusDrift {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(-6deg) scale(0.95);
+    opacity: 0.28;
+  }
+  50% {
+    transform: translate3d(12px, -18px, 0) rotate(8deg) scale(1.08);
+    opacity: 0.58;
+  }
+}
+
+@keyframes sunbeamGlide {
+  0% {
+    transform: translate3d(-45%, 0, 0) skewX(-18deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.48;
+  }
+  80% {
+    opacity: 0.42;
+  }
+  100% {
+    transform: translate3d(145%, 0, 0) skewX(-18deg);
+    opacity: 0;
+  }
+}
+
+.animate-pastel-aura {
+  animation: pastelAura 14s ease-in-out infinite;
+}
+
+.animate-pastel-aura-alt {
+  animation: pastelAuraAlt 17s ease-in-out infinite;
+}
+
+.animate-sparkle-twinkle {
+  animation: sparkleTwinkle 3.8s ease-in-out infinite;
+}
+
+.animate-studio-mote {
+  animation: studioMoteFloat 8.5s ease-in-out infinite;
+}
+
+.animate-studio-petal {
+  animation-name: studioPetalGlide;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.animate-bokeh-rise {
+  animation: bokehRise 11s ease-in-out infinite;
+}
+
+.animate-lotus-drift {
+  animation: lotusDrift 9.5s ease-in-out infinite;
+}
+
+.animate-sunbeam-glide {
+  animation: sunbeamGlide 15s ease-in-out infinite;
+}
+
+.animate-gold-shimmer {
+  animation: goldShimmerSweep 6.5s ease-in-out infinite;
+}
+
+.animate-studio-enter {
+  animation: studioEnterUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes invitePetalFall {
+  0% {
+    transform: translate3d(0, -10vh, 0) rotate(0deg) scale(0.92);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.85;
+  }
+  28% {
+    transform: translate3d(34px, 24vh, 0) rotate(78deg) scale(1);
+    opacity: 0.78;
+  }
+  56% {
+    transform: translate3d(-22px, 56vh, 0) rotate(172deg) scale(0.96);
+    opacity: 0.72;
+  }
+  84% {
+    transform: translate3d(26px, 86vh, 0) rotate(265deg) scale(0.94);
+    opacity: 0.56;
+  }
+  100% {
+    transform: translate3d(-12px, 110vh, 0) rotate(330deg) scale(0.9);
+    opacity: 0;
+  }
+}
+
+@keyframes inviteSealPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.12;
+  }
+}
+
+.invite-petal {
+  animation-name: invitePetalFall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.invite-seal-pulse {
+  animation: inviteSealPulse 2.8s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes figureStandGroom {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-0.8deg) scaleX(1) scaleY(1);
+  }
+  28% {
+    transform: translate3d(2px, -3px, 0) rotate(1.5deg) scaleX(0.992) scaleY(1.018);
+  }
+  56% {
+    transform: translate3d(1px, -1px, 0) rotate(0.4deg) scaleX(1.005) scaleY(0.996);
+  }
+  80% {
+    transform: translate3d(-1.5px, -2.5px, 0) rotate(-1.3deg) scaleX(0.995) scaleY(1.014);
+  }
+}
+
+@keyframes figureStandBride {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0.9deg) scaleX(1) scaleY(1);
+  }
+  30% {
+    transform: translate3d(-2px, -3px, 0) rotate(-1.6deg) scaleX(0.992) scaleY(1.018);
+  }
+  58% {
+    transform: translate3d(-1px, -1px, 0) rotate(-0.3deg) scaleX(1.005) scaleY(0.996);
+  }
+  82% {
+    transform: translate3d(1.5px, -2.5px, 0) rotate(1.4deg) scaleX(0.995) scaleY(1.014);
+  }
+}
+
+@keyframes figureShadowBreathe {
+  0%,
+  100% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 0.78;
+  }
+  30% {
+    transform: scaleX(0.94) scaleY(0.94);
+    opacity: 0.62;
+  }
+  58% {
+    transform: scaleX(1.03) scaleY(1.02);
+    opacity: 0.84;
+  }
+  82% {
+    transform: scaleX(0.96) scaleY(0.95);
+    opacity: 0.68;
+  }
+}
+
+.animate-figure-stand-groom {
+  transform-origin: 50% 95%;
+  animation: figureStandGroom 4.8s ease-in-out infinite;
+}
+
+.animate-figure-stand-bride {
+  transform-origin: 50% 95%;
+  animation: figureStandBride 5.2s ease-in-out -1.4s infinite;
+}
+
+.animate-figure-shadow-groom {
+  animation: figureShadowBreathe 4.8s ease-in-out infinite;
+}
+
+.animate-figure-shadow-bride {
+  animation: figureShadowBreathe 5.2s ease-in-out -1.4s infinite;
+}
+
+@keyframes heroNamasteyLeft {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+  22% {
+    transform: translate3d(2px, -3px, 0) rotate(2.4deg) scale(1.018);
+  }
+  44% {
+    transform: translate3d(1px, 0, 0) rotate(0.6deg) scale(0.996);
+  }
+  72% {
+    transform: translate3d(-1.5px, -2.5px, 0) rotate(-1.4deg) scale(1.012);
+  }
+}
+
+@keyframes heroNamasteyRight {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+  24% {
+    transform: translate3d(-2px, -3px, 0) rotate(-2.4deg) scale(1.018);
+  }
+  48% {
+    transform: translate3d(-1px, 0, 0) rotate(-0.6deg) scale(0.996);
+  }
+  74% {
+    transform: translate3d(1.5px, -2.5px, 0) rotate(1.4deg) scale(1.012);
+  }
+}
+
+@keyframes heroAuraBreathe {
+  0%,
+  100% {
+    transform: scale(0.96);
+    opacity: 0.65;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 0.95;
+  }
+}
+
+.animate-hero-namastey-left {
+  transform-origin: 50% 94%;
+  animation: heroNamasteyLeft 4.2s ease-in-out infinite;
+}
+
+.animate-hero-namastey-right {
+  transform-origin: 50% 94%;
+  animation: heroNamasteyRight 4.5s ease-in-out -1.1s infinite;
+}
+
+.animate-hero-aura {
+  animation: heroAuraBreathe 4.6s ease-in-out infinite;
+}
+
+@keyframes familyPortraitBreathe {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -2.5px, 0) scale(1.016);
+  }
+}
+
+.animate-family-portrait-breathe {
+  transform-origin: 50% 100%;
+  animation: familyPortraitBreathe 5.4s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes yagyaFlameOuter {
+  0%,
+  100% {
+    transform: scaleX(1) scaleY(1) skewX(-1.5deg);
+  }
+  25% {
+    transform: scaleX(0.94) scaleY(1.09) skewX(2.5deg);
+  }
+  52% {
+    transform: scaleX(1.05) scaleY(0.95) skewX(-2.2deg);
+  }
+  78% {
+    transform: scaleX(0.96) scaleY(1.06) skewX(1.8deg);
+  }
+}
+
+@keyframes yagyaFlameMid {
+  0%,
+  100% {
+    transform: scaleX(1) scaleY(1) skewX(2deg);
+  }
+  30% {
+    transform: scaleX(1.06) scaleY(1.11) skewX(-2.8deg);
+  }
+  62% {
+    transform: scaleX(0.93) scaleY(0.94) skewX(2.2deg);
+  }
+  84% {
+    transform: scaleX(1.03) scaleY(1.07) skewX(-1.4deg);
+  }
+}
+
+@keyframes yagyaFlameInner {
+  0%,
+  100% {
+    transform: scaleX(0.96) scaleY(0.96);
+    opacity: 0.92;
+  }
+  40% {
+    transform: scaleX(1.07) scaleY(1.12);
+    opacity: 1;
+  }
+  72% {
+    transform: scaleX(0.94) scaleY(1.02);
+    opacity: 0.88;
+  }
+}
+
+@keyframes yagyaGlowPulse {
+  0%,
+  100% {
+    transform: scale(0.94);
+    opacity: 0.62;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 0.95;
+  }
+}
+
+@keyframes yagyaEmberRise {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.7);
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.95;
+  }
+  65% {
+    transform: translate3d(4px, -24px, 0) scale(1);
+    opacity: 0.72;
+  }
+  100% {
+    transform: translate3d(-3px, -44px, 0) scale(0.4);
+    opacity: 0;
+  }
+}
+
+@keyframes yagyaSmokeDrift {
+  0% {
+    transform: translate3d(0, 0, 0) scaleX(0.9);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.34;
+  }
+  70% {
+    transform: translate3d(5px, -18px, 0) scaleX(1.15);
+    opacity: 0.2;
+  }
+  100% {
+    transform: translate3d(-4px, -34px, 0) scaleX(1.3);
+    opacity: 0;
+  }
+}
+
+.animate-yagya-flame-outer {
+  transform-origin: 55px 96px;
+  animation: yagyaFlameOuter 1.9s ease-in-out infinite;
+}
+
+.animate-yagya-flame-mid {
+  transform-origin: 55px 96px;
+  animation: yagyaFlameMid 1.45s ease-in-out -0.4s infinite;
+}
+
+.animate-yagya-flame-inner {
+  transform-origin: 55px 96px;
+  animation: yagyaFlameInner 1.15s ease-in-out -0.2s infinite;
+}
+
+.animate-yagya-glow {
+  transform-origin: 50% 60%;
+  animation: yagyaGlowPulse 2.1s ease-in-out infinite;
+}
+
+.animate-yagya-ember {
+  animation: yagyaEmberRise 2.4s ease-out infinite;
+}
+
+.animate-yagya-smoke {
+  animation: yagyaSmokeDrift 3.6s ease-out infinite;
+}
+
+/* Royal Velvet Curtain Seal Unsealing Halo Burst (compositor-only) */
+@keyframes curtainSealBurst {
+  0% {
+    transform: scale(0.84);
+    opacity: 0.9;
+  }
+  65% {
+    transform: scale(1.44);
+    opacity: 0.34;
+  }
+  100% {
+    transform: scale(1.66);
+    opacity: 0;
+  }
+}
+
+.animate-curtain-seal-burst {
+  animation: curtainSealBurst 0.54s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+/* Royal Velvet Curtain — Idle Flowing & Rippling Fabric Motion (GPU compositor-only) */
+@keyframes curtainIdleDrapeLeft {
+  0%,
+  100% {
+    transform: translate3d(0%, 0, 0) scaleX(1) skewX(0deg);
+  }
+  25% {
+    transform: translate3d(0.55%, 0, 0) scaleX(1.016) skewX(0.65deg);
+  }
+  50% {
+    transform: translate3d(-0.35%, 0, 0) scaleX(0.992) skewX(-0.5deg);
+  }
+  75% {
+    transform: translate3d(0.4%, 0, 0) scaleX(1.012) skewX(0.45deg);
+  }
+}
+
+@keyframes curtainIdleDrapeRight {
+  0%,
+  100% {
+    transform: translate3d(0%, 0, 0) scaleX(1) skewX(0deg);
+  }
+  25% {
+    transform: translate3d(-0.55%, 0, 0) scaleX(1.016) skewX(-0.65deg);
+  }
+  50% {
+    transform: translate3d(0.35%, 0, 0) scaleX(0.992) skewX(0.5deg);
+  }
+  75% {
+    transform: translate3d(-0.4%, 0, 0) scaleX(1.012) skewX(-0.45deg);
+  }
+}
+
+@keyframes curtainRippleWaveLeft {
+  0% {
+    transform: translate3d(-22%, 0, 0) skewX(-2deg);
+    opacity: 0.42;
+  }
+  35% {
+    transform: translate3d(8%, 0, 0) skewX(1.5deg);
+    opacity: 0.72;
+  }
+  70% {
+    transform: translate3d(-6%, 0, 0) skewX(-1.2deg);
+    opacity: 0.54;
+  }
+  100% {
+    transform: translate3d(-22%, 0, 0) skewX(-2deg);
+    opacity: 0.42;
+  }
+}
+
+@keyframes curtainRippleWaveRight {
+  0% {
+    transform: translate3d(22%, 0, 0) skewX(2deg);
+    opacity: 0.42;
+  }
+  35% {
+    transform: translate3d(-8%, 0, 0) skewX(-1.5deg);
+    opacity: 0.72;
+  }
+  70% {
+    transform: translate3d(6%, 0, 0) skewX(1.2deg);
+    opacity: 0.54;
+  }
+  100% {
+    transform: translate3d(22%, 0, 0) skewX(2deg);
+    opacity: 0.42;
+  }
+}
+
+/* Dynamic Flowing & Gathering Ripple While Parting Open */
+@keyframes curtainOpenRippleLeft {
+  0% {
+    transform: translate3d(0%, 0, 0) scaleX(1) skewX(0deg);
+  }
+  18% {
+    transform: translate3d(-12%, 0, 0) scaleX(0.98) skewX(-3.2deg);
+  }
+  44% {
+    transform: translate3d(-44%, 0, 0) scaleX(0.93) skewX(-1.6deg);
+  }
+  72% {
+    transform: translate3d(-80%, 0, 0) scaleX(0.89) skewX(-3.6deg);
+  }
+  100% {
+    transform: translate3d(-106%, 0, 0) scaleX(0.84) skewX(-1.2deg);
+  }
+}
+
+@keyframes curtainOpenRippleRight {
+  0% {
+    transform: translate3d(0%, 0, 0) scaleX(1) skewX(0deg);
+  }
+  18% {
+    transform: translate3d(12%, 0, 0) scaleX(0.98) skewX(3.2deg);
+  }
+  44% {
+    transform: translate3d(44%, 0, 0) scaleX(0.93) skewX(1.6deg);
+  }
+  72% {
+    transform: translate3d(80%, 0, 0) scaleX(0.89) skewX(3.6deg);
+  }
+  100% {
+    transform: translate3d(106%, 0, 0) scaleX(0.84) skewX(1.2deg);
+  }
+}
+
+@keyframes curtainPartingFoldsLeft {
+  0% {
+    transform: translate3d(0%, 0, 0) scaleX(1) skewX(0deg);
+  }
+  30% {
+    transform: translate3d(-4%, 0, 0) scaleX(0.95) skewX(-2.4deg);
+  }
+  65% {
+    transform: translate3d(2%, 0, 0) scaleX(0.91) skewX(1.6deg);
+  }
+  100% {
+    transform: translate3d(-5%, 0, 0) scaleX(0.88) skewX(-1.8deg);
+  }
+}
+
+@keyframes curtainPartingFoldsRight {
+  0% {
+    transform: translate3d(0%, 0, 0) scaleX(1) skewX(0deg);
+  }
+  30% {
+    transform: translate3d(4%, 0, 0) scaleX(0.95) skewX(2.4deg);
+  }
+  65% {
+    transform: translate3d(-2%, 0, 0) scaleX(0.91) skewX(-1.6deg);
+  }
+  100% {
+    transform: translate3d(5%, 0, 0) scaleX(0.88) skewX(1.8deg);
+  }
+}
+
+.animate-curtain-idle-left {
+  transform-origin: 50% 0%;
+  animation: curtainIdleDrapeLeft 7.2s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-curtain-idle-right {
+  transform-origin: 50% 0%;
+  animation: curtainIdleDrapeRight 7.6s ease-in-out -1.4s infinite;
+  will-change: transform;
+}
+
+.animate-curtain-ripple-left {
+  animation: curtainRippleWaveLeft 5.8s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.animate-curtain-ripple-right {
+  animation: curtainRippleWaveRight 6.2s ease-in-out -1.9s infinite;
+  will-change: transform, opacity;
+}
+
+.animate-curtain-open-left {
+  transform-origin: 0% 0%;
+  animation: curtainOpenRippleLeft 1220ms cubic-bezier(0.58, 0.02, 0.22, 1) forwards;
+  will-change: transform;
+}
+
+.animate-curtain-open-right {
+  transform-origin: 100% 0%;
+  animation: curtainOpenRippleRight 1220ms cubic-bezier(0.58, 0.02, 0.22, 1) forwards;
+  will-change: transform;
+}
+
+.animate-curtain-parting-folds-left {
+  transform-origin: 50% 0%;
+  animation: curtainPartingFoldsLeft 1220ms ease-in-out forwards;
+  will-change: transform;
+}
+
+.animate-curtain-parting-folds-right {
+  transform-origin: 50% 0%;
+  animation: curtainPartingFoldsRight 1220ms ease-in-out forwards;
+  will-change: transform;
+}
+
+/* Curtain Alpana Chakra & Candlelight Aura — Zooms Out Smoothly From Behind The Wax Seal */
+@keyframes curtainChakraZoomIn {
+  0% {
+    transform: scale(0.22);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes curtainAuraZoomIn {
+  0% {
+    transform: scale(0.32);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-curtain-chakra-zoom-in {
+  transform-origin: center center;
+  animation: curtainChakraZoomIn 1250ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
+  will-change: transform, opacity;
+}
+
+.animate-curtain-aura-zoom-in {
+  transform-origin: center center;
+  animation: curtainAuraZoomIn 1150ms cubic-bezier(0.16, 1, 0.3, 1) 100ms both;
+  will-change: transform, opacity;
+}
+
+@keyframes modalEnter {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.animate-modal-enter {
+  animation: modalEnter 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Container-aware 9:16 portrait video stage: fills maximum possible height & width
+   within available card space while preserving exact 9:16 ratio and zero overflow. */
+.media-slot-9-16 {
+  container-type: size;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.media-frame-9-16 {
+  width: min(100cqw, calc(100cqh * 9 / 16));
+  height: min(100cqh, calc(100cqw * 16 / 9));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-delay: 0ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
