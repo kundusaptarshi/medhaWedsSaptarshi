@@ -17,6 +17,8 @@ import {
   getEventMediaConfig,
   getEventSideHeaderLabel,
   hasKnowMoreContent,
+  parseEventTimestampInIst,
+  parseScheduledEventIstMs,
   parseSideQueryParam,
   pickNextCountdownEvent,
   resolveDeviceDirectionsUrl,
@@ -195,8 +197,9 @@ test('getAllWeddingEventDetails resolves all 6 events in 2027 with Bride Haldi a
   assert.equal(groomHaldi.videoSrc, '/videos/Haldi_Groom.mp4');
   assert.equal(
     groomHaldi.description,
-    'A splash of yellow, sacred turmeric, and pure joy! Join us as we drench the groom in blessed holud paste—straight from the bride’s home—to bring out that pre-wedding glow, accompanied by music, laughter, and lots of playful chaos.'
+    'A splash of yellow, sacred turmeric, and pure joy! Join us as we drench the groom in blessed holud paste to bring out that pre-wedding glow, accompanied by music, laughter, and lots of playful chaos.'
   );
+  assert.ok(!/straight from the bride/i.test(groomHaldi.description));
   assert.ok(!/bride\/groom/i.test(groomHaldi.description));
 
   assert.ok(genericHaldi.combinedSides);
@@ -455,9 +458,57 @@ test('parseSideQueryParam, resolveInviteSideMode, and buildUpdatedSideSearch han
   assert.equal(getEventSideHeaderLabel(weddingEvent), null);
 });
 
-test('computeCountdownParts computes exact days, hours, minutes, seconds and handles past timestamps', () => {
+test('parseEventTimestampInIst and computeCountdownParts evaluate exact event date/time in IST (UTC+05:30) regardless of local timezone', () => {
+  // 2027-02-11 11:00:00 IST == 2027-02-11 05:30:00 UTC
+  const expectedHaldiUtcMs = Date.UTC(2027, 1, 11, 5, 30, 0);
+  assert.equal(
+    parseEventTimestampInIst('2027-02-11T11:00:00+05:30'),
+    expectedHaldiUtcMs
+  );
+  // Even without an explicit offset suffix, timestamps are explicitly parsed as IST (+05:30)
+  assert.equal(
+    parseEventTimestampInIst('2027-02-11T11:00:00'),
+    expectedHaldiUtcMs
+  );
+  assert.equal(
+    parseScheduledEventIstMs('11/02/2027', '11:00 AM onwards'),
+    expectedHaldiUtcMs
+  );
+
+  // Every single wedding event's startIso must match its displayed dateLabel & timeLabel in IST
+  for (const ev of ALL_WEDDING_EVENT_DETAILS) {
+    assert.ok(
+      ev.startIso.endsWith('+05:30'),
+      `Expected explicit IST offset (+05:30) on ${ev.id}, got ${ev.startIso}`
+    );
+    assert.equal(
+      parseEventTimestampInIst(ev.startIso),
+      parseScheduledEventIstMs(ev.dateLabel, ev.timeLabel),
+      `Expected ${ev.id} startIso to match ${ev.dateLabel} ${ev.timeLabel} in IST`
+    );
+  }
+
+  // Haldi (11:00 AM IST) vs The Wedding (6:30 PM IST) on 11/02/2027 differ by exact 7h 30m
+  const haldi = ALL_WEDDING_EVENT_DETAILS.find((e) => e.id === 'haldi')!;
+  const wedding = ALL_WEDDING_EVENT_DETAILS.find((e) => e.id === 'wedding')!;
+  const nowUtc = Date.UTC(2027, 1, 9, 5, 30, 0); // 2027-02-09 11:00:00 IST
+  assert.deepEqual(computeCountdownParts(haldi.startIso, nowUtc), {
+    days: 2,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    isPast: false,
+  });
+  assert.deepEqual(computeCountdownParts(wedding.startIso, nowUtc), {
+    days: 2,
+    hours: 7,
+    minutes: 30,
+    seconds: 0,
+    isPast: false,
+  });
+
   const target = '2027-02-11T11:00:00+05:30';
-  const targetMs = Date.parse(target);
+  const targetMs = parseEventTimestampInIst(target);
   const twoDaysThreeHoursFiveMinNineSecBefore =
     targetMs - (2 * 86400 + 3 * 3600 + 5 * 60 + 9) * 1000;
 
@@ -481,13 +532,17 @@ test('computeCountdownParts computes exact days, hours, minutes, seconds and han
   });
 });
 
-test('pickNextCountdownEvent returns earliest upcoming invited event', () => {
-  const subset = resolveEventDetails(['aiburobhat', 'haldi'], 'bride');
-  const beforeAll = Date.parse('2026-11-20T12:00:00+05:30');
+test('pickNextCountdownEvent returns earliest upcoming invited event using IST timestamps', () => {
+  const subset = resolveEventDetails(['aiburobhat', 'haldi', 'wedding'], 'bride');
+  const beforeAll = parseEventTimestampInIst('2026-11-20T12:00:00+05:30');
   assert.equal(pickNextCountdownEvent(subset, beforeAll)?.id, 'aiburobhat');
 
-  const afterAiburobhat = Date.parse('2027-02-10T15:00:00+05:30');
+  const afterAiburobhat = parseEventTimestampInIst('2027-02-10T15:00:00+05:30');
   assert.equal(pickNextCountdownEvent(subset, afterAiburobhat)?.id, 'haldi');
+
+  // Between Haldi (11:00 AM IST) and Wedding (6:30 PM IST) on the same day -> picks Wedding
+  const afternoonOnWeddingDay = parseEventTimestampInIst('2027-02-11T13:00:00+05:30');
+  assert.equal(pickNextCountdownEvent(subset, afternoonOnWeddingDay)?.id, 'wedding');
 });
 
 test('buildEventIcsContent emits valid RFC 5545 VCALENDAR with escaped fields', () => {

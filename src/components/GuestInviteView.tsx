@@ -91,7 +91,6 @@ import {
   PIHU_WELCOME_FIGURE_SRC,
   RIYAN_WELCOME_FIGURE_SRC,
   SacredYagyaBonfire,
-  SealMonogramCrest,
 } from './InviteIllustrations';
 import { RevealFromSide } from './ScrollReveal';
 import { StoryYearCarousel } from './StoryYearCarousel';
@@ -251,6 +250,12 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
     }, 1000);
     return () => window.clearInterval(interval);
   }, [eventDetails.length]);
+
+  useEffect(() => {
+    if (activeSceneIndex >= Math.max(0, eventDetails.length + 2)) {
+      setNowMs(Date.now());
+    }
+  }, [activeSceneIndex, eventDetails.length]);
 
   useEffect(() => {
     if (!rsvpDialogOpen) return;
@@ -1337,6 +1342,19 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                 </RevealFromSide>
 
                 <RevealFromSide
+                  from="up"
+                  delayMs={450}
+                  forceVisible={heroRevealed}
+                >
+                  <p
+                    data-testid="hero-celebrations-prompt"
+                    className="mb-1.5 sm:mb-2 font-editorial italic text-[14px] sm:text-[18px] md:text-[20px] text-[#FAF0D4]/95 leading-snug max-w-[310px] sm:max-w-lg text-balance"
+                  >
+                    Please grace us with your presence at the celebrations below.
+                  </p>
+                </RevealFromSide>
+
+                <RevealFromSide
                   from="left"
                   delayMs={480}
                   forceVisible={heroRevealed}
@@ -1391,7 +1409,7 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                           data-testid="hero-kids-quote"
                           className="m-0 max-w-[152px] min-[390px]:max-w-[162px] sm:max-w-[360px] md:max-w-[460px] lg:max-w-[560px] text-center text-balance font-editorial italic text-[13px] min-[390px]:text-[13.5px] leading-[1.32] sm:text-[23px] md:text-[28px] lg:text-[32px] sm:leading-[1.28] text-[#FAF0D4] tracking-[0.01em] drop-shadow-[0_2px_12px_rgba(24,3,7,0.58)]"
                         >
-                          &ldquo;We&rsquo;re on official wedding duty&mdash;please come bless Mamai &amp; Pipi.&rdquo;
+                          &ldquo;We&rsquo;re on official wedding duty &mdash; Let&rsquo;s get Mamai and Pipi married!&rdquo;
                         </blockquote>
                         <span
                           aria-hidden="true"
@@ -1489,14 +1507,29 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
               }}
               className="w-full max-w-[1280px] mx-auto min-h-full [@media(min-width:768px)_and_(min-height:580px)]:h-full overflow-x-hidden overflow-y-clip px-3 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-6 sm:pb-8 [@media(min-width:768px)_and_(max-height:740px)]:pt-6 [@media(min-width:768px)_and_(max-height:740px)]:pb-4 flex flex-col"
             >
-              <div className="my-auto w-full">
-                {/* Desktop: Commanding Groom (LEFT), Seal Monogram Crest above Sacred Yagya Bonfire (CENTER), Commanding Bride (RIGHT) */}
-                <div className="hidden md:grid grid-cols-[minmax(240px,340px)_minmax(200px,280px)_minmax(240px,340px)] lg:grid-cols-[340px_270px_340px] xl:grid-cols-[370px_290px_370px] justify-center items-center gap-4 lg:gap-8">
+              <div className="my-auto w-full flex flex-col items-center">
+                <div
+                  data-parallax-section="bride-and-groom"
+                  data-parallax-speed="0.12"
+                  data-parallax-max="36"
+                  className="text-center mb-5 sm:mb-7 md:mb-8 shrink-0 px-2"
+                >
+                  <h2
+                    data-testid="bride-and-groom-heading"
+                    className="font-editorial text-[30px] sm:text-5xl font-normal text-[#231618] leading-tight text-balance"
+                  >
+                    But first, an introduction to{' '}
+                    <span className="italic text-[#7F1924]">us</span>
+                  </h2>
+                </div>
+
+                {/* Desktop: Commanding Groom (LEFT), Sacred Yagya Bonfire (CENTER), Commanding Bride (RIGHT) */}
+                <div className="hidden md:grid grid-cols-[minmax(240px,340px)_minmax(160px,220px)_minmax(240px,340px)] lg:grid-cols-[340px_220px_340px] xl:grid-cols-[370px_240px_370px] justify-center items-center gap-4 lg:gap-8 w-full">
                   <div
                     data-parallax-section="bride-and-groom"
                     data-parallax-speed="0.22"
                     data-parallax-max="64"
-                    className="flex justify-center pt-8"
+                    className="flex justify-center pt-4"
                   >
                     <CoupleSideFigure
                       side="groom"
@@ -1510,17 +1543,12 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                     data-parallax-section="bride-and-groom"
                     data-parallax-speed="0.12"
                     data-parallax-max="40"
-                    className="flex flex-col items-center justify-center gap-5 lg:gap-7 pb-6"
+                    className="flex flex-col items-center justify-center pt-10 lg:pt-12"
                   >
-                    <SealMonogramCrest
-                      animate={showCoupleAmbient}
-                      testId="desktop-bonfire-seal-monogram"
-                      className="w-[184px] h-[184px] lg:w-[220px] lg:h-[220px] xl:w-[240px] xl:h-[240px]"
-                    />
                     <SacredYagyaBonfire
                       animate={showCoupleAmbient}
                       testId="desktop-yagya-bonfire"
-                      className="w-[96px] lg:w-[114px] h-[132px] lg:h-[154px]"
+                      className="w-[104px] lg:w-[120px] h-[142px] lg:h-[164px]"
                     />
                   </div>
 
@@ -1528,7 +1556,7 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                     data-parallax-section="bride-and-groom"
                     data-parallax-speed="0.22"
                     data-parallax-max="64"
-                    className="flex justify-center pt-8"
+                    className="flex justify-center pt-4"
                   >
                     <CoupleSideFigure
                       side="bride"
@@ -1539,26 +1567,13 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                   </div>
                 </div>
 
-                {/* Mobile: Seal Monogram Crest centered directly above the Sacred Yagya Bonfire flanked by Groom & Bride */}
+                {/* Mobile: Sacred Yagya Bonfire flanked by Groom & Bride below heading */}
                 <div className="flex md:hidden flex-col items-center w-full max-w-[460px] mx-auto">
-                  <div
-                    data-parallax-section="bride-and-groom"
-                    data-parallax-speed="0.1"
-                    data-parallax-max="30"
-                    className="flex justify-center mb-5 sm:mb-6"
-                  >
-                    <SealMonogramCrest
-                      animate={showCoupleAmbient}
-                      testId="mobile-bonfire-seal-monogram"
-                      className="w-[126px] h-[126px] sm:w-[152px] sm:h-[152px]"
-                    />
-                  </div>
-
                   <div
                     data-parallax-section="bride-and-groom"
                     data-parallax-speed="0.18"
                     data-parallax-max="48"
-                    className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start gap-0.5 sm:gap-2 pt-5 pb-2 w-full"
+                    className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start gap-0.5 sm:gap-2 pt-2 pb-2 w-full"
                   >
                     <CoupleSideFigure
                       side="groom"
@@ -1588,7 +1603,7 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
           </div>
         </section>
 
-        {/* SCENE 2 — US THROUGH THE YEARS (DEDICATED CAROUSEL SHOWCASE) */}
+        {/* SCENE 2 — MEMORY LANE (DEDICATED CAROUSEL SHOWCASE) */}
         <section
           id="us-through-the-years"
           ref={(el) => {
@@ -1597,7 +1612,7 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
           data-cinema-scene="us-through-the-years"
           data-cascade-section="us-through-the-years"
           data-testid="us-through-the-years-section"
-          aria-label="Us Through The Years"
+          aria-label="And a minor detour down the memory lane"
           style={{ zIndex: 12, opacity: 0, visibility: 'hidden', pointerEvents: 'none' }}
           className="absolute inset-0 overflow-hidden bg-[radial-gradient(circle_at_center,#FFF8DE_0%,#FDF3D0_60%,#F7E7B8_100%)]"
         >
@@ -1639,11 +1654,14 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                   data-parallax-section="us-through-the-years"
                   data-parallax-speed="0.12"
                   data-parallax-max="36"
-                  className="text-center mb-3 sm:mb-4 shrink-0"
+                  className="text-center mb-3 sm:mb-4 shrink-0 px-2"
                 >
-                  <h2 className="font-editorial text-[34px] sm:text-5xl font-normal text-[#231618] leading-tight">
-                    Us Through{' '}
-                    <span className="italic text-[#7F1924]">The Years</span>
+                  <h2
+                    data-testid="memory-lane-heading"
+                    className="font-editorial text-[26px] sm:text-4xl md:text-[44px] font-normal text-[#231618] leading-tight text-balance"
+                  >
+                    And a minor detour down{' '}
+                    <span className="italic text-[#7F1924]">the memory lane</span>
                   </h2>
                 </div>
 
@@ -2152,8 +2170,11 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                 >
                   {countdownTargetEvent.title}
                 </h2>
-                <p className="mt-1.5 text-xs sm:text-sm tracking-[0.16em] uppercase text-[#EAD29F]/85">
-                  {countdownTargetEvent.dateLabel}
+                <p
+                  data-testid="countdown-target-schedule"
+                  className="mt-1.5 text-xs sm:text-sm tracking-[0.16em] uppercase text-[#EAD29F]/85 tabular-nums"
+                >
+                  {countdownTargetEvent.dateLabel} · {countdownTargetEvent.timeLabel} (IST)
                 </p>
               </div>
 

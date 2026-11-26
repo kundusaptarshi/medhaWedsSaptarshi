@@ -5,6 +5,7 @@ import {
   Download,
   Edit3,
   ExternalLink,
+  FileSpreadsheet,
   Printer,
   Search,
   Share2,
@@ -29,6 +30,10 @@ import {
   sharePrintQrViaNativeSheet,
   supportsNativeFileShare,
 } from '../utils/qrGenerator';
+import {
+  DEFAULT_INVITE_LINKS_CSV_FILENAME,
+  downloadFilteredInviteLinksCsv,
+} from '../utils/csvExport';
 
 interface InvitationCardItemProps {
   invitation: InvitationRecord;
@@ -335,6 +340,22 @@ export const InvitationListPanel: React.FC<InvitationListPanelProps> = ({
   const hasActiveFilters =
     Boolean(searchQuery) || eventFilterId !== 'all' || sideFilter !== 'all';
 
+  const handleExportFilteredCsv = () => {
+    if (loading || invitations.length === 0) {
+      onNotify?.('No filtered invitations to export.');
+      return;
+    }
+    const exported = downloadFilteredInviteLinksCsv(
+      invitations,
+      DEFAULT_INVITE_LINKS_CSV_FILENAME
+    );
+    if (exported) {
+      onNotify?.(
+        `Exported ${invitations.length} invite ${invitations.length === 1 ? 'link' : 'links'} to CSV.`
+      );
+    }
+  };
+
   return (
     <section
       aria-label="Generated invitations"
@@ -350,15 +371,42 @@ export const InvitationListPanel: React.FC<InvitationListPanelProps> = ({
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setBulkQrModalOpen(true)}
-          disabled={loading || invitations.length === 0}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-[#4D0A14] px-3.5 py-2 text-xs font-medium text-[#FAF5EC] hover:bg-[#63111D] disabled:opacity-45 disabled:cursor-not-allowed transition-colors cursor-pointer whitespace-nowrap"
-        >
-          <Download className="w-3.5 h-3.5 text-[#DFBE7B]" aria-hidden="true" />
-          Download All QRs
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setBulkQrModalOpen(true)}
+            disabled={loading || invitations.length === 0}
+            title={
+              invitations.length === 0
+                ? 'No filtered invitations available to export'
+                : 'Export filtered QR codes as a ZIP archive'
+            }
+            className="inline-flex items-center gap-1.5 rounded-xl bg-[#4D0A14] px-3.5 py-2 text-xs font-medium text-[#FAF5EC] hover:bg-[#63111D] disabled:opacity-45 disabled:cursor-not-allowed transition-colors cursor-pointer whitespace-nowrap"
+          >
+            <Download className="w-3.5 h-3.5 text-[#DFBE7B]" aria-hidden="true" />
+            Download All QRs
+          </button>
+
+          <button
+            type="button"
+            onClick={handleExportFilteredCsv}
+            disabled={loading || invitations.length === 0}
+            data-testid="export-filtered-csv-button"
+            title={
+              invitations.length === 0
+                ? 'No filtered invitations available to export'
+                : 'Export filtered guest names and invite links as CSV'
+            }
+            aria-label="Export filtered invite links to CSV"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-[#DFBE7B] bg-[#FFFDF0] px-3.5 py-2 text-xs font-medium text-[#4D0A14] hover:border-[#9E2A2B]/60 hover:bg-[#F9E8AE] disabled:opacity-45 disabled:cursor-not-allowed transition-colors cursor-pointer whitespace-nowrap"
+          >
+            <FileSpreadsheet
+              className="w-3.5 h-3.5 text-[#7F1924]"
+              aria-hidden="true"
+            />
+            Export Links (CSV)
+          </button>
+        </div>
       </div>
 
       {/* Search + Side Filter + Event Filter */}

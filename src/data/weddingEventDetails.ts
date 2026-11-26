@@ -205,7 +205,7 @@ const WEDDING_EVENT_CONFIGS: Record<string, WeddingEventBaseConfig> = {
         ...GROOM_HOUSE_DETAILS,
         videoSrc: '/videos/Haldi_Groom.mp4',
         description:
-          'A splash of yellow, sacred turmeric, and pure joy! Join us as we drench the groom in blessed holud paste—straight from the bride’s home—to bring out that pre-wedding glow, accompanied by music, laughter, and lots of playful chaos.',
+          'A splash of yellow, sacred turmeric, and pure joy! Join us as we drench the groom in blessed holud paste to bring out that pre-wedding glow, accompanied by music, laughter, and lots of playful chaos.',
       },
     },
   },

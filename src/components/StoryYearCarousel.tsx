@@ -106,7 +106,7 @@ export const StoryYearCarousel: React.FC<StoryYearCarouselProps> = ({
       data-orientation="portrait"
       role="region"
       aria-roledescription="carousel"
-      aria-label="Us Through The Years photo carousel"
+      aria-label="And a minor detour down the memory lane photo carousel"
       tabIndex={0}
       onKeyDown={handleKeyDown}
       onMouseEnter={() => setIsPaused(true)}

@@ -73,14 +73,94 @@ export function getEventSideHeaderLabel(
   return "Bride's & Groom's Sides";
 }
 
+/** Indian Standard Time (IST) fixed UTC offset: +05:30 (+330 minutes). */
+export const IST_OFFSET_MINUTES = 330;
+export const IST_OFFSET_MS = IST_OFFSET_MINUTES * 60 * 1000;
+
+const ISO_DATETIME_PATTERN =
+  /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?)?(Z|[+-]\d{2}:?\d{2})?$/i;
+
 /**
- * Computes remaining days, hours, minutes, and seconds until an ISO timestamp.
+ * Explicitly parses an event ISO date/time string into a UTC epoch millisecond
+ * timestamp evaluated in Indian Standard Time (IST, UTC+05:30) regardless of
+ * the visitor's local device timezone.
+ * - If an explicit offset (`+05:30`, `Z`, etc.) is present, it is parsed
+ *   deterministically without delegating to local-timezone `Date.parse`.
+ * - If no timezone offset is present (e.g. `2027-02-11T18:30:00` or `2027-02-11`),
+ *   the wall-clock date/time is explicitly interpreted in IST (`UTC+05:30`).
+ */
+export function parseEventTimestampInIst(isoString: string): number {
+  const trimmed = isoString.trim();
+  const match = ISO_DATETIME_PATTERN.exec(trimmed);
+  if (!match) {
+    return Number.NaN;
+  }
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const hour = match[4] ? Number(match[4]) : 0;
+  const minute = match[5] ? Number(match[5]) : 0;
+  const second = match[6] ? Number(match[6]) : 0;
+  const ms = match[7] ? Number(match[7].padEnd(3, '0')) : 0;
+  const rawOffset = match[8];
+
+  let offsetMinutes = IST_OFFSET_MINUTES;
+  if (rawOffset) {
+    if (rawOffset.toUpperCase() === 'Z') {
+      offsetMinutes = 0;
+    } else {
+      const sign = rawOffset.startsWith('-') ? -1 : 1;
+      const digits = rawOffset.slice(1).replace(':', '');
+      const offHours = Number(digits.slice(0, 2));
+      const offMins = Number(digits.slice(2, 4));
+      offsetMinutes = sign * (offHours * 60 + offMins);
+    }
+  }
+
+  return (
+    Date.UTC(year, month - 1, day, hour, minute, second, ms) -
+    offsetMinutes * 60 * 1000
+  );
+}
+
+/**
+ * Parses a human-readable scheduled date (`DD/MM/YYYY`) and time label
+ * (e.g. `6:30 PM onwards`, `11:00 AM onwards`) explicitly in IST (`UTC+05:30`)
+ * and returns the exact UTC epoch millisecond timestamp.
+ */
+export function parseScheduledEventIstMs(
+  dateLabel: string,
+  timeLabel: string
+): number {
+  const dateMatch = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(dateLabel.trim());
+  const timeMatch = /(\d{1,2}):(\d{2})\s*(AM|PM)/i.exec(timeLabel.trim());
+  if (!dateMatch || !timeMatch) {
+    return Number.NaN;
+  }
+
+  const day = Number(dateMatch[1]);
+  const month = Number(dateMatch[2]);
+  const year = Number(dateMatch[3]);
+  let hour = Number(timeMatch[1]);
+  const minute = Number(timeMatch[2]);
+  const meridiem = timeMatch[3].toUpperCase();
+
+  if (meridiem === 'PM' && hour < 12) hour += 12;
+  if (meridiem === 'AM' && hour === 12) hour = 0;
+
+  return Date.UTC(year, month - 1, day, hour, minute, 0, 0) - IST_OFFSET_MS;
+}
+
+/**
+ * Computes remaining days, hours, minutes, and seconds until an event timestamp
+ * evaluated explicitly in Indian Standard Time (IST, UTC+05:30).
  */
 export function computeCountdownParts(
   targetIso: string,
   nowMs: number = Date.now()
 ): CountdownParts {
-  const targetMs = Date.parse(targetIso);
+  const targetMs = parseEventTimestampInIst(targetIso);
   if (!Number.isFinite(targetMs) || targetMs <= nowMs) {
     return { days: 0, hours: 0, minutes: 0, seconds: 0, isPast: true };
   }
@@ -95,7 +175,8 @@ export function computeCountdownParts(
 }
 
 /**
- * Picks the earliest upcoming event from the guest's invited events for the countdown banner.
+ * Picks the earliest upcoming event from the guest's invited events for the countdown banner,
+ * comparing each event's exact scheduled timestamp in IST (UTC+05:30) against `nowMs`.
  * Falls back to the first event in canonical order if all events are in the past.
  */
 export function pickNextCountdownEvent(
@@ -104,7 +185,9 @@ export function pickNextCountdownEvent(
 ): WeddingEventDetail | null {
   if (events.length === 0) return null;
   const sorted = [...events].sort((a, b) => a.sortOrder - b.sortOrder);
-  const upcoming = sorted.find((ev) => Date.parse(ev.startIso) > nowMs);
+  const upcoming = sorted.find(
+    (ev) => parseEventTimestampInIst(ev.startIso) > nowMs
+  );
   return upcoming ?? sorted[0];
 }
 
@@ -141,7 +224,7 @@ export function buildEventIcsContent(
   guestDisplayName?: string,
   nowDate: Date = new Date()
 ): string {
-  const startDate = new Date(event.startIso);
+  const startDate = new Date(parseEventTimestampInIst(event.startIso));
   const endDate = new Date(startDate.getTime() + event.durationHours * 3600 * 1000);
   const summary = `Medha & Saptarshi — ${event.title}`;
   const location = event.venueAddress.trim()

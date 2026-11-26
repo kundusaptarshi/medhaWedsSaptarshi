@@ -41,7 +41,7 @@ export function buildInviteCascadeSections(
     {
       id: 'us-through-the-years',
       kind: 'story',
-      label: 'Us Through The Years',
+      label: 'Memory Lane',
       theme: 'yellow',
       singleScreen: true,
     },
@@ -287,7 +287,7 @@ export function buildCinemaScenes(
       id: 'us-through-the-years',
       chapterId: 'us-through-the-years',
       kind: 'story',
-      label: 'Us Through The Years',
+      label: 'Memory Lane',
       theme: 'yellow',
     },
   ];
