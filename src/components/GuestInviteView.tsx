@@ -1117,7 +1117,7 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
       data-active-scene={activeSceneMeta?.id ?? 'hero'}
       data-active-scene-index={activeSceneIndex}
       data-total-scenes={cinemaScenes.length}
-      className="relative w-full h-[100dvh] overflow-hidden bg-[#4D0A14] text-[#231618]"
+      className="fixed inset-0 overflow-hidden bg-[#4D0A14] text-[#231618]"
     >
 
       {/* Whisper-Thin Top Antique-Gold Journey Hairline */}
@@ -1216,7 +1216,7 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
       {/* FIXED FULL-VIEWPORT CINEMA STAGE — ZERO PAGE SCROLLING, PURE IN-PLACE CROSSFADES */}
       <div
         data-testid="cinema-viewport-stage"
-        className="fixed inset-0 z-10 w-full h-[100dvh] overflow-hidden"
+        className="fixed inset-0 z-10 overflow-hidden"
       >
         {/* SCENE 0 — FULL-SCREEN ROYAL MAROON HERO */}
         <header
@@ -2385,12 +2385,6 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
           }}
           className="absolute inset-0 overflow-hidden bg-[radial-gradient(circle_at_center,#FFF8DE_0%,#FDF3D0_60%,#F7E7B8_100%)]"
         >
-          {/* Delicate antique-gold hairline museum frame */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-3 sm:inset-x-6 top-3 sm:top-6 bottom-16 border border-[#DFBE7B]/35"
-          />
-
           {showClosingAmbient && <StudioFloatingSparkles contained subtle />}
 
           <div
@@ -2407,164 +2401,169 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
               scrollerRefs.current.closing = el;
             }}
             data-scene-scroller="closing"
-            className="relative z-10 w-full h-full overflow-y-auto [@media(min-width:768px)_and_(min-height:580px)]:overflow-y-hidden overflow-x-hidden overscroll-y-none"
+            className="relative z-10 w-full h-full overflow-hidden overscroll-y-none"
           >
             <div
               ref={(el) => {
                 stageRefs.current.closing = el;
               }}
-              className="w-full min-h-full [@media(min-width:768px)_and_(min-height:580px)]:h-full overflow-x-hidden overflow-y-clip flex flex-col"
+              className="w-full h-full grid grid-rows-[minmax(0,1fr)_auto] overflow-hidden"
             >
-              <div className="flex-1 flex flex-col px-6 pt-10 pb-5 sm:pt-11 sm:pb-4 [@media(min-width:768px)_and_(max-height:720px)]:pt-5 [@media(min-width:768px)_and_(max-height:720px)]:pb-2 text-center">
-                <div className="w-full max-w-2xl mx-auto my-auto">
-              {/* Full-width RSVP Button */}
-              {!isGeneric && eventDetails.length > 0 && (
+              <div className="relative min-h-0 overflow-y-auto overflow-x-hidden flex flex-col px-5 sm:px-6 pt-13 pb-2 sm:pt-7 sm:pb-2.5 [@media(max-height:760px)]:pt-4 [@media(max-height:760px)]:pb-1.5 [@media(max-width:639px)_and_(max-height:760px)]:pt-11 text-center">
+                {/* Delicate antique-gold hairline museum frame above the footer */}
                 <div
-                  data-parallax-section="closing"
-                  data-parallax-speed="0.14"
-                  data-parallax-max="44"
-                  className="mb-4 sm:mb-5"
-                >
-                  <RevealFromSide
-                    from="left"
-                    delayMs={60}
-                    durationMs={780}
-                    forceVisible={showClosingAmbient}
-                  >
-                    <button
-                      type="button"
-                      onClick={handleOpenRsvpDialog}
-                      data-testid="open-rsvp-dialog-button"
-                      className="w-full rounded-xl bg-[#4D0A14] border border-[#DFBE7B]/75 px-6 py-3.5 sm:py-4 text-center text-[#FAF5EC] shadow-[0_14px_34px_rgba(77,10,20,0.18)] hover:bg-[#63111D] transition-colors cursor-pointer group"
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-3 sm:inset-6 border border-[#DFBE7B]/35"
+                />
+                <div className="relative z-10 w-full max-w-2xl mx-auto my-auto">
+                  {/* Full-width RSVP Button */}
+                  {!isGeneric && eventDetails.length > 0 && (
+                    <div
+                      data-parallax-section="closing"
+                      data-parallax-speed="0.14"
+                      data-parallax-max="44"
+                      className="mb-2.5 sm:mb-4 [@media(max-height:740px)]:mb-2"
                     >
-                      <span className="block text-[10px] sm:text-[11px] font-semibold tracking-[0.28em] uppercase text-[#DFBE7B]">
-                        {hasSavedRsvp ? 'Response Recorded' : 'Kindly Respond'}
-                      </span>
-                      <span className="mt-0.5 block font-editorial text-2xl sm:text-3xl font-medium text-[#FAF5EC] tracking-wide">
-                        {hasSavedRsvp ? 'Update Your RSVP' : 'RSVP'}
-                      </span>
-                    </button>
-
-                    {rsvpSavedMessage && (
-                      <div
-                        role="status"
-                        data-testid="rsvp-saved-banner"
-                        className="mt-3 flex items-center justify-center gap-2 rounded-xl border border-[#1E5E3E]/30 bg-[#1E5E3E]/10 px-4 py-2.5 text-xs font-medium text-[#1E5E3E]"
+                      <RevealFromSide
+                        from="left"
+                        delayMs={60}
+                        durationMs={780}
+                        forceVisible={showClosingAmbient}
                       >
-                        <CheckCircle2 className="w-4 h-4 shrink-0" aria-hidden="true" />
-                        <span>{rsvpSavedMessage}</span>
-                      </div>
-                    )}
-                  </RevealFromSide>
-                </div>
-              )}
+                        <button
+                          type="button"
+                          onClick={handleOpenRsvpDialog}
+                          data-testid="open-rsvp-dialog-button"
+                          className="w-full rounded-xl bg-[#4D0A14] border border-[#DFBE7B]/75 px-5 sm:px-6 py-2.5 sm:py-3 [@media(max-height:700px)]:py-2 text-center text-[#FAF5EC] shadow-[0_14px_34px_rgba(77,10,20,0.18)] hover:bg-[#63111D] transition-colors cursor-pointer group"
+                        >
+                          <span className="block text-[9.5px] sm:text-[11px] font-semibold tracking-[0.26em] uppercase text-[#DFBE7B]">
+                            {hasSavedRsvp ? 'Response Recorded' : 'Kindly Respond'}
+                          </span>
+                          <span className="mt-0.5 block font-editorial text-xl sm:text-[28px] [@media(max-height:700px)]:text-lg font-medium text-[#FAF5EC] tracking-wide leading-tight">
+                            {hasSavedRsvp ? 'Update Your RSVP' : 'RSVP'}
+                          </span>
+                        </button>
 
-              {/* Heartfelt Closing Blessing */}
-              <div
-                data-parallax-section="closing"
-                data-parallax-speed="0.22"
-                data-parallax-max="60"
-              >
-                <RevealFromSide
-                  from="right"
-                  delayMs={140}
-                  durationMs={840}
-                  forceVisible={showClosingAmbient}
-                >
-                  <LotusEmblem className="w-10 h-6 mx-auto text-[#C89D54]" />
-                  <p className="mt-2 font-editorial italic text-xl sm:text-[26px] text-[#4C373A] leading-snug">
-                  Please grace us with your presence at the celebrations.
-                  </p>
-                  <p className="mt-2 font-editorial italic text-xl sm:text-[26px] text-[#4C373A] leading-snug">
-                    {!isGeneric && invitation.displayGuestName && !isReferencePreview
-                      ? `Your presence is the greatest blessing, dear ${invitation.displayGuestName}`
-                      : 'Your presence is the greatest blessing'}
-                  </p>
+                        {rsvpSavedMessage && (
+                          <div
+                            role="status"
+                            data-testid="rsvp-saved-banner"
+                            className="mt-2 flex items-center justify-center gap-2 rounded-xl border border-[#1E5E3E]/30 bg-[#1E5E3E]/10 px-3.5 py-1.5 text-[11px] sm:text-xs font-medium text-[#1E5E3E]"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                            <span>{rsvpSavedMessage}</span>
+                          </div>
+                        )}
+                      </RevealFromSide>
+                    </div>
+                  )}
 
-                  <AlpanaDivider className="w-40 mx-auto my-2.5 sm:my-3 text-[#C89D54]" />
-
-                  <p className="text-[10px] sm:text-[11px] font-medium tracking-[0.28em] uppercase text-[#8E7679]">
-                    With love &amp; regards
-                  </p>
-
-                  <FamilyPortraitFigure animate={showClosingAmbient} />
-
-                  <p
-                    data-testid="closing-family-signature"
-                    className="mt-2.5 font-editorial text-2xl sm:text-[30px] font-medium text-[#4D0A14] leading-snug"
-                  >
-                    The Bhattacharya and Kundu Family
-                  </p>
-
-                  <p className="mt-1 text-xs font-medium tracking-[0.18em] text-[#8E7679]">
-                    #MedhaWedsSaptarshi
-                  </p>
-                </RevealFromSide>
-
-                <RevealFromSide
-                  from="up"
-                  delayMs={240}
-                  durationMs={780}
-                  forceVisible={showClosingAmbient}
-                >
-                  {/* Side-by-Side Family Contact Buttons: Bhattacharya Family (Left) & Kundu Family (Right) */}
+                  {/* Heartfelt Closing Blessing */}
                   <div
-                    data-testid="family-contact-buttons"
-                    className="mt-3.5 grid grid-cols-2 gap-2.5 sm:gap-3.5 max-w-lg mx-auto"
+                    data-parallax-section="closing"
+                    data-parallax-speed="0.22"
+                    data-parallax-max="60"
                   >
-                    <button
-                      type="button"
-                      onClick={() => setActiveContactFamily('bhattacharya')}
-                      data-testid="contact-bhattacharya-button"
-                      className="inline-flex items-center justify-center gap-1.5 min-h-[44px] rounded-xl border border-[#DFBE7B] bg-[#FFF9E2] px-3 sm:px-4 py-2 text-[11px] sm:text-xs font-semibold text-[#4D0A14] shadow-xs hover:border-[#9E2A2B]/60 hover:bg-[#F9E8AE] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#9E2A2B]"
+                    <RevealFromSide
+                      from="right"
+                      delayMs={140}
+                      durationMs={840}
+                      forceVisible={showClosingAmbient}
                     >
-                      <Phone
-                        className="w-3.5 h-3.5 text-[#9E2A2B] shrink-0"
-                        aria-hidden="true"
-                      />
-                      <span className="leading-tight">
-                        Contact Bhattacharya Family
-                      </span>
-                    </button>
+                      <LotusEmblem className="w-8 h-5 sm:w-9 sm:h-5 [@media(max-height:700px)]:w-7 [@media(max-height:700px)]:h-4 mx-auto text-[#C89D54]" />
+                      <p className="mt-1 sm:mt-1.5 font-editorial italic text-[17px] sm:text-[22px] lg:text-[24px] [@media(max-height:700px)]:text-[15.5px] text-[#4C373A] leading-snug text-balance">
+                        Please grace us with your presence at the celebrations.
+                      </p>
+                      <p className="mt-1 sm:mt-1.5 font-editorial italic text-[17px] sm:text-[22px] lg:text-[24px] [@media(max-height:700px)]:text-[15.5px] text-[#4C373A] leading-snug text-balance">
+                        {!isGeneric && invitation.displayGuestName && !isReferencePreview
+                          ? `Your presence is the greatest blessing, dear ${invitation.displayGuestName}`
+                          : 'Your presence is the greatest blessing'}
+                      </p>
 
-                    <button
-                      type="button"
-                      onClick={() => setActiveContactFamily('kundu')}
-                      data-testid="contact-kundu-button"
-                      className="inline-flex items-center justify-center gap-1.5 min-h-[44px] rounded-xl border border-[#DFBE7B] bg-[#FFF9E2] px-3 sm:px-4 py-2 text-[11px] sm:text-xs font-semibold text-[#4D0A14] shadow-xs hover:border-[#9E2A2B]/60 hover:bg-[#F9E8AE] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#9E2A2B]"
-                    >
-                      <Phone
-                        className="w-3.5 h-3.5 text-[#9E2A2B] shrink-0"
-                        aria-hidden="true"
-                      />
-                      <span className="leading-tight">Contact Kundu Family</span>
-                    </button>
-                  </div>
+                      <AlpanaDivider className="w-32 sm:w-40 mx-auto my-1.5 sm:my-2.5 [@media(max-height:740px)]:my-1.5 text-[#C89D54]" />
 
-                  <div className="mt-3 flex justify-center">
-                    <button
-                      type="button"
-                      onClick={() => scrollToSection('hero')}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-[#E6D194] bg-[#FFF9E2]/90 px-4 py-1.5 text-[10px] font-semibold tracking-[0.22em] uppercase text-[#6B4A23] hover:border-[#9E2A2B]/45 hover:text-[#4D0A14] transition-colors cursor-pointer"
+                      <p className="text-[9.5px] sm:text-[11px] font-medium tracking-[0.26em] uppercase text-[#8E7679]">
+                        With love &amp; regards
+                      </p>
+
+                      <FamilyPortraitFigure animate={showClosingAmbient} />
+
+                      <p
+                        data-testid="closing-family-signature"
+                        className="mt-1.5 sm:mt-2 [@media(max-height:700px)]:mt-1 font-editorial text-xl sm:text-[27px] [@media(max-height:700px)]:text-[19px] font-medium text-[#4D0A14] leading-tight"
+                      >
+                        The Bhattacharya and Kundu Family
+                      </p>
+
+                      <p className="mt-0.5 text-[11px] sm:text-xs font-medium tracking-[0.18em] text-[#8E7679]">
+                        #MedhaWedsSaptarshi
+                      </p>
+                    </RevealFromSide>
+
+                    <RevealFromSide
+                      from="up"
+                      delayMs={240}
+                      durationMs={780}
+                      forceVisible={showClosingAmbient}
                     >
-                      <ChevronUp className="w-3.5 h-3.5" aria-hidden="true" />
-                      Back to Welcome
-                    </button>
+                      {/* Side-by-Side Family Contact Buttons: Bhattacharya Family (Left) & Kundu Family (Right) */}
+                      <div
+                        data-testid="family-contact-buttons"
+                        className="mt-2.5 sm:mt-3 [@media(max-height:720px)]:mt-2 grid grid-cols-2 gap-2 sm:gap-3 max-w-lg mx-auto"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setActiveContactFamily('bhattacharya')}
+                          data-testid="contact-bhattacharya-button"
+                          className="inline-flex items-center justify-center gap-1.5 min-h-[40px] sm:min-h-[42px] [@media(max-height:700px)]:min-h-[36px] rounded-xl border border-[#DFBE7B] bg-[#FFF9E2] px-2.5 sm:px-4 py-1.5 text-[11px] sm:text-xs font-semibold text-[#4D0A14] shadow-xs hover:border-[#9E2A2B]/60 hover:bg-[#F9E8AE] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#9E2A2B]"
+                        >
+                          <Phone
+                            className="w-3.5 h-3.5 text-[#9E2A2B] shrink-0"
+                            aria-hidden="true"
+                          />
+                          <span className="leading-tight">
+                            Contact Bhattacharya Family
+                          </span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setActiveContactFamily('kundu')}
+                          data-testid="contact-kundu-button"
+                          className="inline-flex items-center justify-center gap-1.5 min-h-[40px] sm:min-h-[42px] [@media(max-height:700px)]:min-h-[36px] rounded-xl border border-[#DFBE7B] bg-[#FFF9E2] px-2.5 sm:px-4 py-1.5 text-[11px] sm:text-xs font-semibold text-[#4D0A14] shadow-xs hover:border-[#9E2A2B]/60 hover:bg-[#F9E8AE] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#9E2A2B]"
+                        >
+                          <Phone
+                            className="w-3.5 h-3.5 text-[#9E2A2B] shrink-0"
+                            aria-hidden="true"
+                          />
+                          <span className="leading-tight">Contact Kundu Family</span>
+                        </button>
+                      </div>
+
+                      <div className="mt-2 sm:mt-2.5 [@media(max-height:720px)]:mt-1.5 flex justify-center">
+                        <button
+                          type="button"
+                          onClick={() => scrollToSection('hero')}
+                          className="inline-flex items-center gap-1.5 rounded-full border border-[#E6D194] bg-[#FFF9E2]/90 px-3.5 py-1 sm:px-4 sm:py-1.5 text-[10px] font-semibold tracking-[0.22em] uppercase text-[#6B4A23] hover:border-[#9E2A2B]/45 hover:text-[#4D0A14] transition-colors cursor-pointer"
+                        >
+                          <ChevronUp className="w-3.5 h-3.5" aria-hidden="true" />
+                          Back to Welcome
+                        </button>
+                      </div>
+                    </RevealFromSide>
                   </div>
-                </RevealFromSide>
+                </div>
               </div>
-            </div>
-          </div>
 
-          {/* Thin Royal Maroon Closing Colophon Footer */}
-          <footer
-            data-testid="ai-colophon-footer"
-            className="relative z-20 shrink-0 w-full bg-[radial-gradient(circle_at_center,#74111D_0%,#4D0A14_60%,#34060D_100%)] border-t border-[#DFBE7B]/40 px-2.5 sm:px-5 py-1.5 sm:py-2 text-center text-[10.5px] sm:text-[11px] leading-[1.3] text-[#FAF5EC]/95"
-          >
-            <p className="w-full mx-auto">
-              We both are engineers, yet vibecoded this entire website—even our piano cover got an AI-assisted refinement. And in case you were wondering, this footer was written by AI too. Consistency is key; laziness is a feature.
-            </p>
-          </footer>
+              {/* Thin Royal Maroon Closing Colophon Footer */}
+              <footer
+                data-testid="ai-colophon-footer"
+                className="relative z-30 w-full bg-[radial-gradient(circle_at_center,#74111D_0%,#4D0A14_60%,#34060D_100%)] border-t border-[#DFBE7B]/40 px-3 sm:px-5 pt-1.5 sm:pt-2 pb-[max(0.45rem,env(safe-area-inset-bottom))] text-center text-[10px] sm:text-[11px] leading-[1.35] text-[#FAF5EC]/95"
+              >
+                <p className="w-full mx-auto">
+                  We both are engineers, yet vibecoded this entire website—even our piano cover got an AI-assisted refinement. And in case you were wondering, this footer was written by AI too. Consistency is key; laziness is a feature.
+                </p>
+              </footer>
             </div>
           </div>
         </div>

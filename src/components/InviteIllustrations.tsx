@@ -1189,7 +1189,7 @@ export const FamilyPortraitFigure: React.FC<{ animate?: boolean }> = ({
 }) => (
   <div
     data-testid="closing-family-portrait"
-    className="group relative mx-auto mt-2.5 sm:mt-3 w-full max-w-[300px] sm:max-w-[390px] md:max-w-[440px] flex flex-col items-center select-none"
+    className="group relative mx-auto mt-1.5 sm:mt-2.5 [@media(max-height:740px)]:mt-1.5 w-full max-w-[280px] sm:max-w-[380px] md:max-w-[440px] flex flex-col items-center select-none"
   >
     {/* Subtle warm champagne-gold radial halo behind the family */}
     <div
@@ -1243,7 +1243,7 @@ export const FamilyPortraitFigure: React.FC<{ animate?: boolean }> = ({
         loading="eager"
         decoding="async"
         draggable={false}
-        className="w-full h-auto max-h-[min(176px,22dvh)] sm:max-h-[min(210px,24.5dvh)] object-contain object-bottom drop-shadow-[0_10px_18px_rgba(77,10,20,0.14)] transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+        className="w-auto max-w-full max-h-[184px] sm:max-h-[210px] [@media(max-height:700px)]:max-h-[140px] h-[clamp(92px,18vh,184px)] sm:h-[clamp(108px,21vh,210px)] [@media(max-height:700px)]:h-[clamp(76px,15.5vh,140px)] object-contain object-bottom drop-shadow-[0_10px_18px_rgba(77,10,20,0.14)] transition-transform duration-700 ease-out group-hover:scale-[1.02]"
       />
     </div>
 
