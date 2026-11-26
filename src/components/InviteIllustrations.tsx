@@ -687,19 +687,18 @@ export const CoupleSideFigure: React.FC<CoupleSideFigureProps> = ({
   const isGroom = side === 'groom';
   const resolvedSrc =
     imageSrc ?? (isGroom ? DEFAULT_GROOM_FIGURE_SRC : DEFAULT_BRIDE_FIGURE_SRC);
-  // Scale up both Bride & Groom dramatically for commanding portrait presence while keeping Groom clearly taller and cleanly framed
-  const resolvedScale = imageScale ?? (isGroom ? 1.16 : 1.03);
+  const resolvedScale = imageScale ?? 1;
 
   return (
     <div
       data-testid={`couple-figure-${side}`}
-      className="group flex flex-col items-center select-none w-full"
+      className="group flex flex-col items-center select-none w-full min-w-0"
     >
-      <div className="relative w-[152px] sm:w-[186px] md:w-[min(238px,32dvh)] lg:w-[min(290px,38dvh)] xl:w-[min(332px,42dvh)] max-w-full aspect-[3/4.1] flex items-end justify-center">
+      <div className="relative h-[clamp(210px,min(44dvh,94vw),385px)] sm:h-[clamp(255px,48dvh,435px)] md:h-[clamp(265px,53dvh,495px)] lg:h-[clamp(285px,56.5dvh,545px)] xl:h-[clamp(305px,58.5dvh,560px)] w-full flex items-end justify-center">
         {/* Soft warm golden halo behind the standing figure */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-4 top-[14%] bottom-[10%] rounded-full opacity-75"
+          className="pointer-events-none absolute left-1/2 -translate-x-1/2 w-[clamp(118px,24dvh,275px)] top-[10%] bottom-[8%] rounded-full opacity-75"
           style={{
             background:
               'radial-gradient(circle at 50% 45%, rgba(255, 246, 200, 0.72) 0%, rgba(235, 194, 96, 0.18) 52%, transparent 74%)',
@@ -710,7 +709,7 @@ export const CoupleSideFigure: React.FC<CoupleSideFigureProps> = ({
         <svg
           aria-hidden="true"
           viewBox="0 0 24 24"
-          className={`pointer-events-none absolute top-[12%] left-[12%] w-3.5 h-3.5 text-[#C89D54] ${
+          className={`pointer-events-none absolute top-[10%] left-[18%] w-3.5 h-3.5 text-[#C89D54] ${
             animate ? 'animate-sparkle-twinkle' : ''
           }`}
           style={{ animationDelay: isGroom ? '-0.6s' : '-2.1s' }}
@@ -723,7 +722,7 @@ export const CoupleSideFigure: React.FC<CoupleSideFigureProps> = ({
         <svg
           aria-hidden="true"
           viewBox="0 0 24 24"
-          className={`pointer-events-none absolute top-[26%] right-[10%] w-2.5 h-2.5 text-[#D89B34] ${
+          className={`pointer-events-none absolute top-[24%] right-[16%] w-2.5 h-2.5 text-[#D89B34] ${
             animate ? 'animate-sparkle-twinkle' : ''
           }`}
           style={{ animationDelay: isGroom ? '-2.4s' : '-0.9s' }}
@@ -737,7 +736,7 @@ export const CoupleSideFigure: React.FC<CoupleSideFigureProps> = ({
         {/* Grounded breathing foot shadow */}
         <div
           aria-hidden="true"
-          className={`pointer-events-none absolute bottom-1.5 w-[56%] h-4 rounded-full ${
+          className={`pointer-events-none absolute bottom-1 left-1/2 -translate-x-1/2 w-[clamp(84px,16dvh,190px)] h-4 rounded-full ${
             animate
               ? isGroom
                 ? 'animate-figure-shadow-groom'
@@ -771,22 +770,24 @@ export const CoupleSideFigure: React.FC<CoupleSideFigureProps> = ({
               loading="eager"
               decoding="async"
               draggable={false}
-              className="w-full h-full object-contain object-bottom origin-bottom transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+              className={`${
+                isGroom ? 'h-full' : 'h-[91%]'
+              } w-auto max-w-none object-contain object-bottom origin-bottom transition-transform duration-500 ease-out group-hover:scale-[1.03]`}
             />
           </div>
         </div>
       </div>
 
-      <p className="mt-1.5 font-editorial text-2xl sm:text-3xl font-medium text-[#4D0A14] leading-tight">
+      <p className="mt-1.5 sm:mt-2 shrink-0 font-editorial text-[22px] sm:text-[28px] lg:text-[32px] font-medium text-[#4D0A14] leading-tight">
         {name}
       </p>
-      <p className="mt-0.5 text-[10px] font-medium tracking-[0.24em] uppercase text-[#8E7679]">
+      <p className="mt-0.5 shrink-0 text-[9.5px] sm:text-[10.5px] font-medium tracking-[0.24em] uppercase text-[#8E7679]">
         {isGroom ? 'The Groom' : 'The Bride'}
       </p>
       {parentage && (
         <p
           data-testid={`couple-parentage-${side}`}
-          className="mt-1.5 max-w-[152px] sm:max-w-[240px] text-center text-[11px] sm:text-xs font-normal leading-snug text-[#4D0A14]"
+          className="mt-1 sm:mt-1.5 shrink-0 max-w-[144px] sm:max-w-[235px] lg:max-w-[260px] text-center text-[10.5px] sm:text-xs font-normal leading-snug text-[#4D0A14]"
         >
           {parentage}
         </p>

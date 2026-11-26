@@ -1277,11 +1277,11 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                 data-parallax-max="48"
                 className="w-full max-w-3xl mx-auto flex-1 flex flex-col items-center justify-center py-0"
               >
-                <RevealFromSide from="down" delayMs={40} forceVisible={heroRevealed}>
+                <RevealFromSide from="down" delayMs={40} forceVisible={heroRevealed && activeSectionId === 'hero'}>
                   <LotusEmblem className="w-10 h-5 sm:w-13 sm:h-7 text-[#DFBE7B] mx-auto" />
                 </RevealFromSide>
 
-                <RevealFromSide from="left" delayMs={120} forceVisible={heroRevealed}>
+                <RevealFromSide from="left" delayMs={120} forceVisible={heroRevealed && activeSectionId === 'hero'}>
                   <p className="mt-2 sm:mt-3 text-[10px] sm:text-[11px] font-medium tracking-[0.28em] uppercase text-[#DFBE7B]/90">
                     Together with their families
                   </p>
@@ -1294,7 +1294,7 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                   <RevealFromSide
                     from="left"
                     delayMs={210}
-                    forceVisible={heroRevealed}
+                    forceVisible={heroRevealed && activeSectionId === 'hero'}
                     className="inline-block"
                   >
                     <span className="block sm:inline text-[42px] sm:text-7xl md:text-[82px] leading-[0.96]">
@@ -1304,7 +1304,7 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                   <RevealFromSide
                     from="down"
                     delayMs={310}
-                    forceVisible={heroRevealed}
+                    forceVisible={heroRevealed && activeSectionId === 'hero'}
                     className="inline-block"
                   >
                     <span className="block sm:inline italic text-[#DFBE7B] font-normal text-[26px] sm:text-6xl md:text-[74px] leading-none my-0.5 sm:my-0">
@@ -1314,7 +1314,7 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                   <RevealFromSide
                     from="right"
                     delayMs={210}
-                    forceVisible={heroRevealed}
+                    forceVisible={heroRevealed && activeSectionId === 'hero'}
                     className="inline-block"
                   >
                     <span className="block sm:inline text-[42px] sm:text-7xl md:text-[82px] leading-[0.96]">
@@ -1326,45 +1326,42 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                 <RevealFromSide
                   from="right"
                   delayMs={350}
-                  forceVisible={heroRevealed}
+                  forceVisible={heroRevealed && activeSectionId === 'hero'}
                 >
-                  <p className="mt-2 sm:mt-3 text-[10px] sm:text-sm font-medium tracking-[0.22em] sm:tracking-[0.26em] uppercase text-[#EAD29F]/85 max-w-[290px] sm:max-w-none leading-relaxed">
-                    Cordially invite you to celebrate their wedding
+                  <p className="mt-2 sm:mt-3 text-[10px] sm:text-[13px] font-medium tracking-[0.22em] sm:tracking-[0.26em] uppercase text-[#EAD29F]/85 max-w-[290px] sm:max-w-none leading-relaxed">
+                    Cordially invite you to celebrate their wedding.
                   </p>
                 </RevealFromSide>
 
                 <RevealFromSide
                   from="up"
-                  delayMs={420}
-                  forceVisible={heroRevealed}
+                  delayMs={410}
+                  forceVisible={heroRevealed && activeSectionId === 'hero'}
                 >
-                  <AlpanaDivider className="w-36 sm:w-52 my-2 sm:my-3.5 text-[#DFBE7B]" />
+                  <AlpanaDivider className="w-36 sm:w-52 my-2 sm:my-3 text-[#DFBE7B]" />
                 </RevealFromSide>
 
                 <RevealFromSide
-                  from="up"
-                  delayMs={450}
-                  forceVisible={heroRevealed}
+                  from="right"
+                  delayMs={515}
+                  forceVisible={heroRevealed && activeSectionId === 'hero'}
                 >
-                  <p
-                    data-testid="hero-celebrations-prompt"
-                    className="mb-1.5 sm:mb-2 font-editorial italic text-[14px] sm:text-[18px] md:text-[20px] text-[#FAF0D4]/95 leading-snug max-w-[310px] sm:max-w-lg text-balance"
-                  >
-                    Please grace us with your presence at the celebrations below.
-                  </p>
-                </RevealFromSide>
-
-                <RevealFromSide
-                  from="left"
-                  delayMs={480}
-                  forceVisible={heroRevealed}
-                >
-                  <p
-                    data-testid="hero-location"
-                    className="text-xs sm:text-sm font-medium tracking-[0.34em] uppercase text-[#DFBE7B]"
-                  >
-                    Kolkata
-                  </p>
+                  <div className="inline-flex items-center justify-center gap-2.5 sm:gap-3.5">
+                    <span
+                      aria-hidden="true"
+                      className="w-6 sm:w-9 h-px bg-gradient-to-r from-transparent to-[#DFBE7B]/70"
+                    />
+                    <p
+                      data-testid="hero-location"
+                      className="text-[11px] sm:text-[13px] font-semibold tracking-[0.38em] uppercase text-[#DFBE7B] pl-[0.38em]"
+                    >
+                      Kolkata
+                    </p>
+                    <span
+                      aria-hidden="true"
+                      className="w-6 sm:w-9 h-px bg-gradient-to-l from-transparent to-[#DFBE7B]/70"
+                    />
+                  </div>
                 </RevealFromSide>
               </div>
 
@@ -1379,8 +1376,8 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                   <div className="justify-self-center sm:justify-self-start">
                     <RevealFromSide
                       from="bottom-left"
-                      delayMs={540}
-                      forceVisible={heroRevealed}
+                      delayMs={550}
+                      forceVisible={heroRevealed && activeSectionId === 'hero'}
                     >
                       <HeroWelcomeFigure
                         side="left"
@@ -1397,8 +1394,8 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                   <div className="flex flex-col items-center justify-center self-center text-center px-0.5 sm:px-3 md:px-5 -mt-5 sm:-mt-8 md:-mt-10">
                     <RevealFromSide
                       from="up"
-                      delayMs={580}
-                      forceVisible={heroRevealed}
+                      delayMs={590}
+                      forceVisible={heroRevealed && activeSectionId === 'hero'}
                     >
                       <div className="flex flex-col items-center">
                         <span
@@ -1409,7 +1406,7 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                           data-testid="hero-kids-quote"
                           className="m-0 max-w-[152px] min-[390px]:max-w-[162px] sm:max-w-[360px] md:max-w-[460px] lg:max-w-[560px] text-center text-balance font-editorial italic text-[13px] min-[390px]:text-[13.5px] leading-[1.32] sm:text-[23px] md:text-[28px] lg:text-[32px] sm:leading-[1.28] text-[#FAF0D4] tracking-[0.01em] drop-shadow-[0_2px_12px_rgba(24,3,7,0.58)]"
                         >
-                          &ldquo;We&rsquo;re on official wedding duty &mdash; Let&rsquo;s get Mamai and Pipi married!&rdquo;
+                          &ldquo;We&rsquo;re on official wedding duty &mdash; let&rsquo;s get Mamai and Pipi married!&rdquo;
                         </blockquote>
                         <span
                           aria-hidden="true"
@@ -1422,8 +1419,8 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                   <div className="justify-self-center sm:justify-self-end">
                     <RevealFromSide
                       from="bottom-right"
-                      delayMs={540}
-                      forceVisible={heroRevealed}
+                      delayMs={550}
+                      forceVisible={heroRevealed && activeSectionId === 'hero'}
                     >
                       <HeroWelcomeFigure
                         side="right"
@@ -1441,7 +1438,7 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                   <RevealFromSide
                     from="up"
                     delayMs={640}
-                    forceVisible={heroRevealed}
+                    forceVisible={heroRevealed && activeSectionId === 'hero'}
                   >
                     <button
                       type="button"
@@ -1499,103 +1496,167 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
               scrollerRefs.current['bride-and-groom'] = el;
             }}
             data-scene-scroller="bride-and-groom"
-            className="relative z-10 w-full h-full overflow-y-auto [@media(min-width:768px)_and_(min-height:580px)]:overflow-y-hidden overflow-x-hidden overscroll-y-none"
+            className="relative z-10 w-full h-full overflow-hidden overscroll-y-none"
           >
             <div
               ref={(el) => {
                 stageRefs.current['bride-and-groom'] = el;
               }}
-              className="w-full max-w-[1280px] mx-auto min-h-full [@media(min-width:768px)_and_(min-height:580px)]:h-full overflow-x-hidden overflow-y-clip px-3 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-6 sm:pb-8 [@media(min-width:768px)_and_(max-height:740px)]:pt-6 [@media(min-width:768px)_and_(max-height:740px)]:pb-4 flex flex-col"
+              className="w-full max-w-[1280px] mx-auto h-full overflow-hidden px-2.5 sm:px-6 lg:px-8 pt-14 sm:pt-14 lg:pt-[58px] [@media(max-height:760px)]:pt-8 [@media(max-height:680px)]:pt-6 pb-4 sm:pb-6 lg:pb-7 [@media(max-height:760px)]:pb-4 [@media(max-height:680px)]:pb-3 flex flex-col items-center"
             >
-              <div className="my-auto w-full flex flex-col items-center">
-                <div
-                  data-parallax-section="bride-and-groom"
-                  data-parallax-speed="0.12"
-                  data-parallax-max="36"
-                  className="text-center mb-5 sm:mb-7 md:mb-8 shrink-0 px-2"
+              <div
+                data-parallax-section="bride-and-groom"
+                data-parallax-speed="0.12"
+                data-parallax-max="36"
+                className="w-full max-w-[920px] mx-auto text-center mt-14 sm:mt-11 lg:mt-[52px] [@media(max-height:760px)]:mt-6 [@media(max-height:680px)]:mt-9 mb-1 sm:mb-2 lg:mb-2 shrink-0 px-2"
+              >
+                <RevealFromSide
+                  from="down"
+                  delayMs={40}
+                  durationMs={760}
+                  forceVisible={showCoupleAmbient}
                 >
-                  <h2
-                    data-testid="bride-and-groom-heading"
-                    className="font-editorial text-[30px] sm:text-5xl font-normal text-[#231618] leading-tight text-balance"
-                  >
-                    But first, an introduction to{' '}
-                    <span className="italic text-[#7F1924]">us</span>
-                  </h2>
-                </div>
+                  <div className="flex flex-col items-center">
+                    <div
+                      aria-hidden="true"
+                      className="inline-flex items-center justify-center gap-3 sm:gap-4 mb-1.5 sm:mb-2"
+                    >
+                      <span className="w-10 sm:w-14 h-px bg-gradient-to-r from-transparent to-[#C89D54]/75" />
+                      <LotusEmblem className="w-7 h-4 sm:w-8 sm:h-4.5 text-[#C89D54]/90 shrink-0" />
+                      <span className="w-10 sm:w-14 h-px bg-gradient-to-l from-transparent to-[#C89D54]/75" />
+                    </div>
+                    <h2
+                      data-testid="bride-and-groom-heading"
+                      className="font-editorial font-medium text-[24px] sm:text-[36px] lg:text-[42px] leading-[1.14] tracking-[-0.01em] text-[#4D0A14] text-balance max-w-[330px] sm:max-w-[660px] mx-auto"
+                    >
+                      But first, an introduction to{' '}
+                      <span className="italic font-normal text-[#8E1D28]">Us</span>
+                    </h2>
+                    <AlpanaDivider className="w-28 sm:w-40 mx-auto mt-1.5 sm:mt-2 text-[#C89D54]/85" />
+                  </div>
+                </RevealFromSide>
+              </div>
 
-                {/* Desktop: Commanding Groom (LEFT), Sacred Yagya Bonfire (CENTER), Commanding Bride (RIGHT) */}
-                <div className="hidden md:grid grid-cols-[minmax(240px,340px)_minmax(160px,220px)_minmax(240px,340px)] lg:grid-cols-[340px_220px_340px] xl:grid-cols-[370px_240px_370px] justify-center items-center gap-4 lg:gap-8 w-full">
+              <div className="flex-1 min-h-0 w-full flex items-center justify-center">
+                {/* Desktop: Commanding Groom (LEFT), Scaled Sacred Yagya Bonfire (CENTER), Commanding Bride (RIGHT) */}
+                <div className="hidden md:grid grid-cols-[minmax(220px,330px)_minmax(180px,250px)_minmax(220px,330px)] lg:grid-cols-[minmax(270px,370px)_minmax(210px,280px)_minmax(270px,370px)] xl:grid-cols-[minmax(290px,390px)_minmax(220px,300px)_minmax(290px,390px)] justify-center items-end gap-2 lg:gap-4 xl:gap-6 w-full max-h-full">
                   <div
                     data-parallax-section="bride-and-groom"
                     data-parallax-speed="0.22"
                     data-parallax-max="64"
-                    className="flex justify-center pt-4"
+                    className="flex justify-center"
                   >
-                    <CoupleSideFigure
-                      side="groom"
-                      name="Saptarshi"
-                      parentage={GROOM_PARENTAGE}
-                      animate={showCoupleAmbient}
-                    />
+                    <RevealFromSide
+                      from="left"
+                      delayMs={140}
+                      durationMs={860}
+                      forceVisible={showCoupleAmbient}
+                      className="w-full"
+                    >
+                      <CoupleSideFigure
+                        side="groom"
+                        name="Saptarshi"
+                        parentage={GROOM_PARENTAGE}
+                        animate={showCoupleAmbient}
+                      />
+                    </RevealFromSide>
                   </div>
 
                   <div
                     data-parallax-section="bride-and-groom"
                     data-parallax-speed="0.12"
                     data-parallax-max="40"
-                    className="flex flex-col items-center justify-center pt-10 lg:pt-12"
+                    className="flex flex-col items-center justify-end pb-[96px] lg:pb-[104px]"
                   >
-                    <SacredYagyaBonfire
-                      animate={showCoupleAmbient}
-                      testId="desktop-yagya-bonfire"
-                      className="w-[104px] lg:w-[120px] h-[142px] lg:h-[164px]"
-                    />
+                    <RevealFromSide
+                      from="up"
+                      delayMs={230}
+                      durationMs={820}
+                      forceVisible={showCoupleAmbient}
+                    >
+                      <SacredYagyaBonfire
+                        animate={showCoupleAmbient}
+                        testId="desktop-yagya-bonfire"
+                        className="h-[clamp(170px,28dvh,275px)] w-auto aspect-[110/148]"
+                      />
+                    </RevealFromSide>
                   </div>
 
                   <div
                     data-parallax-section="bride-and-groom"
                     data-parallax-speed="0.22"
                     data-parallax-max="64"
-                    className="flex justify-center pt-4"
+                    className="flex justify-center"
                   >
-                    <CoupleSideFigure
-                      side="bride"
-                      name="Medha"
-                      parentage={BRIDE_PARENTAGE}
-                      animate={showCoupleAmbient}
-                    />
+                    <RevealFromSide
+                      from="right"
+                      delayMs={140}
+                      durationMs={860}
+                      forceVisible={showCoupleAmbient}
+                      className="w-full"
+                    >
+                      <CoupleSideFigure
+                        side="bride"
+                        name="Medha"
+                        parentage={BRIDE_PARENTAGE}
+                        animate={showCoupleAmbient}
+                      />
+                    </RevealFromSide>
                   </div>
                 </div>
 
-                {/* Mobile: Sacred Yagya Bonfire flanked by Groom & Bride below heading */}
-                <div className="flex md:hidden flex-col items-center w-full max-w-[460px] mx-auto">
+                {/* Mobile: Sacred Yagya Bonfire grounded between scaled Groom & Bride without overflow */}
+                <div className="flex md:hidden items-center justify-center w-full max-w-[440px] mx-auto max-h-full">
                   <div
                     data-parallax-section="bride-and-groom"
                     data-parallax-speed="0.18"
                     data-parallax-max="48"
-                    className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start gap-0.5 sm:gap-2 pt-2 pb-2 w-full"
+                    className="grid grid-cols-[minmax(0,1fr)_96px_minmax(0,1fr)] sm:grid-cols-[minmax(0,1fr)_124px_minmax(0,1fr)] items-start gap-0 sm:gap-1.5 w-full"
                   >
-                    <CoupleSideFigure
-                      side="groom"
-                      name="Saptarshi"
-                      parentage={GROOM_PARENTAGE}
-                      animate={showCoupleAmbient}
-                    />
-
-                    <div className="flex justify-center mt-[88px] sm:mt-[110px]">
-                      <SacredYagyaBonfire
+                    <RevealFromSide
+                      from="left"
+                      delayMs={140}
+                      durationMs={820}
+                      forceVisible={showCoupleAmbient}
+                      className="w-full min-w-0"
+                    >
+                      <CoupleSideFigure
+                        side="groom"
+                        name="Saptarshi"
+                        parentage={GROOM_PARENTAGE}
                         animate={showCoupleAmbient}
-                        testId="mobile-yagya-bonfire"
-                        className="w-[62px] sm:w-[78px] h-[98px] sm:h-[122px]"
                       />
+                    </RevealFromSide>
+
+                    <div className="h-[clamp(210px,min(44dvh,94vw),385px)] sm:h-[clamp(255px,48dvh,435px)] flex items-end justify-center pb-1.5 overflow-visible">
+                      <RevealFromSide
+                        from="up"
+                        delayMs={220}
+                        durationMs={780}
+                        forceVisible={showCoupleAmbient}
+                      >
+                        <SacredYagyaBonfire
+                          animate={showCoupleAmbient}
+                          testId="mobile-yagya-bonfire"
+                          className="h-[clamp(112px,17.5dvh,172px)] w-auto aspect-[110/148]"
+                        />
+                      </RevealFromSide>
                     </div>
 
-                    <CoupleSideFigure
-                      side="bride"
-                      name="Medha"
-                      parentage={BRIDE_PARENTAGE}
-                      animate={showCoupleAmbient}
-                    />
+                    <RevealFromSide
+                      from="right"
+                      delayMs={140}
+                      durationMs={820}
+                      forceVisible={showCoupleAmbient}
+                      className="w-full min-w-0"
+                    >
+                      <CoupleSideFigure
+                        side="bride"
+                        name="Medha"
+                        parentage={BRIDE_PARENTAGE}
+                        animate={showCoupleAmbient}
+                      />
+                    </RevealFromSide>
                   </div>
                 </div>
               </div>
@@ -1647,32 +1708,57 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
               ref={(el) => {
                 stageRefs.current['us-through-the-years'] = el;
               }}
-              className="w-full max-w-[920px] mx-auto min-h-full [@media(min-width:768px)_and_(min-height:580px)]:h-full overflow-x-hidden overflow-y-clip px-4 sm:px-6 lg:px-8 pt-10 sm:pt-12 pb-6 sm:pb-6 [@media(min-width:768px)_and_(max-height:740px)]:pt-5 [@media(min-width:768px)_and_(max-height:740px)]:pb-3 flex flex-col"
+              className="w-full max-w-[920px] mx-auto min-h-full [@media(min-width:768px)_and_(min-height:580px)]:h-full overflow-x-hidden overflow-y-clip px-4 sm:px-6 lg:px-8 pt-14 sm:pt-14 lg:pt-[58px] [@media(max-height:760px)]:pt-8 [@media(max-height:680px)]:pt-6 pb-4 sm:pb-6 lg:pb-7 [@media(max-height:760px)]:pb-4 [@media(max-height:680px)]:pb-3 flex flex-col items-center"
             >
-              <div className="my-auto w-full flex flex-col items-center">
-                <div
-                  data-parallax-section="us-through-the-years"
-                  data-parallax-speed="0.12"
-                  data-parallax-max="36"
-                  className="text-center mb-3 sm:mb-4 shrink-0 px-2"
+              <div
+                data-parallax-section="us-through-the-years"
+                data-parallax-speed="0.12"
+                data-parallax-max="36"
+                className="w-full max-w-[920px] mx-auto text-center mb-2 sm:mb-3 lg:mb-4 shrink-0 px-2"
+              >
+                <RevealFromSide
+                  from="left"
+                  delayMs={40}
+                  durationMs={760}
+                  forceVisible={showStoryAmbient}
                 >
-                  <h2
-                    data-testid="memory-lane-heading"
-                    className="font-editorial text-[26px] sm:text-4xl md:text-[44px] font-normal text-[#231618] leading-tight text-balance"
-                  >
-                    And a minor detour down{' '}
-                    <span className="italic text-[#7F1924]">the memory lane</span>
-                  </h2>
-                </div>
+                  <div className="flex flex-col items-center">
+                    <div
+                      aria-hidden="true"
+                      className="inline-flex items-center justify-center gap-3 sm:gap-4 mb-1.5 sm:mb-2"
+                    >
+                      <span className="w-10 sm:w-14 h-px bg-gradient-to-r from-transparent to-[#C89D54]/75" />
+                      <LotusEmblem className="w-7 h-4 sm:w-8 sm:h-4.5 text-[#C89D54]/90 shrink-0" />
+                      <span className="w-10 sm:w-14 h-px bg-gradient-to-l from-transparent to-[#C89D54]/75" />
+                    </div>
+                    <h2
+                      data-testid="memory-lane-heading"
+                      className="font-editorial font-medium text-[24px] sm:text-[36px] lg:text-[42px] leading-[1.14] tracking-[-0.01em] text-[#4D0A14] text-balance max-w-[330px] sm:max-w-[660px] mx-auto"
+                    >
+                      And a minor detour down{' '}
+                      <span className="italic font-normal text-[#8E1D28]">The Memory Lane</span>
+                    </h2>
+                    <AlpanaDivider className="w-28 sm:w-40 mx-auto mt-1.5 sm:mt-2 text-[#C89D54]/85" />
+                  </div>
+                </RevealFromSide>
+              </div>
 
-                <div
-                  data-parallax-section="us-through-the-years"
-                  data-parallax-speed="0.06"
-                  data-parallax-max="24"
-                  className="w-full flex justify-center"
+              <div
+                data-parallax-section="us-through-the-years"
+                data-parallax-speed="0.06"
+                data-parallax-max="24"
+                className="flex-1 min-h-0 w-full flex items-center justify-center"
+              >
+                <RevealFromSide
+                  from="right"
+                  delayMs={140}
+                  durationMs={840}
+                  forceVisible={showStoryAmbient}
+                  className="w-full"
+                  innerClassName="w-full flex justify-center"
                 >
                   <StoryYearCarousel autoPlay={showStoryAmbient} />
-                </div>
+                </RevealFromSide>
               </div>
             </div>
           </div>
@@ -1757,15 +1843,23 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                     data-parallax-max="42"
                     className="w-full h-full min-h-0 flex items-center justify-center"
                   >
-                    <article
-                      data-testid={`timeline-event-${ev.id}`}
-                      data-event-side={ev.resolvedSide}
-                      className={`w-full h-full max-h-[780px] min-h-0 ${
-                        ev.combinedSides
-                          ? 'max-w-[440px] sm:max-w-[680px] lg:max-w-[740px] px-3 py-2.5 sm:px-6 sm:py-4'
-                          : 'max-w-[420px] sm:max-w-[480px] px-4 py-3 sm:px-6 sm:py-4'
-                      } rounded-2xl border border-[#DFBE7B]/85 bg-[#FFF9E2]/96 shadow-[0_18px_48px_rgba(127,25,36,0.10)] text-center select-text flex flex-col items-center`}
+                    <RevealFromSide
+                      from={index % 2 === 0 ? 'left' : 'right'}
+                      delayMs={60}
+                      durationMs={740}
+                      forceVisible={isThisEventActive}
+                      className="w-full h-full min-h-0"
+                      innerClassName="w-full h-full min-h-0 flex items-center justify-center"
                     >
+                      <article
+                        data-testid={`timeline-event-${ev.id}`}
+                        data-event-side={ev.resolvedSide}
+                        className={`w-full h-full max-h-[780px] min-h-0 ${
+                          ev.combinedSides
+                            ? 'max-w-[440px] sm:max-w-[680px] lg:max-w-[740px] px-3 py-2.5 sm:px-6 sm:py-4'
+                            : 'max-w-[420px] sm:max-w-[480px] px-4 py-3 sm:px-6 sm:py-4'
+                        } rounded-2xl border border-[#DFBE7B]/85 bg-[#FFF9E2]/96 shadow-[0_18px_48px_rgba(127,25,36,0.10)] text-center select-text flex flex-col items-center`}
+                      >
                       {/* 1. Event Title & Date/Time Header */}
                       <div className="shrink-0 w-full">
                         <h3
@@ -1977,7 +2071,8 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                           </div>
                         </>
                       )}
-                    </article>
+                      </article>
+                    </RevealFromSide>
                   </div>
                 </div>
               </div>
@@ -2161,88 +2256,111 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                     data-parallax-speed="0.12"
                     data-parallax-max="36"
                   >
-                <p className="text-[11px] font-medium tracking-[0.28em] uppercase text-[#DFBE7B]/85">
-                  Counting down to
-                </p>
-                <h2
-                  data-testid="countdown-target-title"
-                  className="mt-2 font-editorial text-4xl sm:text-5xl font-medium text-[#FAF5EC]"
-                >
-                  {countdownTargetEvent.title}
-                </h2>
-                <p
-                  data-testid="countdown-target-schedule"
-                  className="mt-1.5 text-xs sm:text-sm tracking-[0.16em] uppercase text-[#EAD29F]/85 tabular-nums"
-                >
-                  {countdownTargetEvent.dateLabel} · {countdownTargetEvent.timeLabel} (IST)
-                </p>
-              </div>
-
-              <div
-                data-parallax-section="countdown"
-                data-parallax-speed="0.22"
-                data-parallax-max="64"
-                className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 max-w-xl mx-auto"
-              >
-                {[
-                  { label: 'Days', value: String(countdown.days) },
-                  { label: 'Hours', value: String(countdown.hours).padStart(2, '0') },
-                  { label: 'Minutes', value: String(countdown.minutes).padStart(2, '0') },
-                  { label: 'Seconds', value: String(countdown.seconds).padStart(2, '0') },
-                ].map((unit) => (
-                  <div
-                    key={unit.label}
-                    className="rounded-xl border border-[#DFBE7B]/35 bg-[#3A070E]/60 px-4 py-5 shadow-[0_12px_28px_rgba(16,2,5,0.28)]"
-                  >
-                    <p className="font-editorial text-4xl sm:text-5xl font-medium text-[#FAF5EC] tabular-nums leading-none">
-                      {unit.value}
-                    </p>
-                    <p className="mt-2 text-[10px] font-medium tracking-[0.24em] uppercase text-[#DFBE7B]/85">
-                      {unit.label}
-                    </p>
+                    <RevealFromSide
+                      from="left"
+                      delayMs={60}
+                      durationMs={780}
+                      forceVisible={activeSectionId === 'countdown'}
+                    >
+                      <p className="text-[11px] font-medium tracking-[0.28em] uppercase text-[#DFBE7B]/85">
+                        Counting down to
+                      </p>
+                      <h2
+                        data-testid="countdown-target-title"
+                        className="mt-2 font-editorial text-4xl sm:text-5xl font-medium text-[#FAF5EC]"
+                      >
+                        {countdownTargetEvent.title}
+                      </h2>
+                      <p
+                        data-testid="countdown-target-schedule"
+                        className="mt-1.5 text-xs sm:text-sm tracking-[0.16em] uppercase text-[#EAD29F]/85 tabular-nums"
+                      >
+                        {countdownTargetEvent.dateLabel} · {countdownTargetEvent.timeLabel} (IST)
+                      </p>
+                    </RevealFromSide>
                   </div>
-                ))}
-              </div>
 
-              {/* Event Selector — strictly scoped to the events this guest is invited to */}
-              {eventDetails.length > 1 && (
-                <div
-                  data-parallax-section="countdown"
-                  data-parallax-speed="0.14"
-                  data-parallax-max="42"
-                  className="mt-8"
-                >
-                  <p className="text-[10px] font-medium tracking-[0.26em] uppercase text-[#EAD29F]/75 mb-3">
-                    Choose celebration
-                  </p>
                   <div
-                    role="group"
-                    aria-label="Choose event to count down to"
-                    data-testid="countdown-event-selector"
-                    className="flex flex-wrap items-center justify-center gap-2"
+                    data-parallax-section="countdown"
+                    data-parallax-speed="0.22"
+                    data-parallax-max="64"
+                    className="mt-8"
                   >
-                    {eventDetails.map((ev) => {
-                      const isSelected = countdownTargetEvent.id === ev.id;
-                      return (
-                        <button
-                          key={ev.id}
-                          type="button"
-                          onClick={() => setSelectedCountdownEventId(ev.id)}
-                          aria-pressed={isSelected}
-                          data-testid={`countdown-select-${ev.id}`}
-                          className={`rounded-lg border px-3.5 py-2 text-xs font-medium tracking-wide transition-colors cursor-pointer ${
-                            isSelected
-                              ? 'border-[#DFBE7B] bg-[#DFBE7B] text-[#3A070E] shadow-sm'
-                              : 'border-[#DFBE7B]/40 bg-[#3A070E]/50 text-[#FAF5EC] hover:bg-[#63111D]/80'
-                          }`}
+                    <RevealFromSide
+                      from="right"
+                      delayMs={150}
+                      durationMs={820}
+                      forceVisible={activeSectionId === 'countdown'}
+                    >
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 max-w-xl mx-auto">
+                        {[
+                          { label: 'Days', value: String(countdown.days) },
+                          { label: 'Hours', value: String(countdown.hours).padStart(2, '0') },
+                          { label: 'Minutes', value: String(countdown.minutes).padStart(2, '0') },
+                          { label: 'Seconds', value: String(countdown.seconds).padStart(2, '0') },
+                        ].map((unit) => (
+                          <div
+                            key={unit.label}
+                            className="rounded-xl border border-[#DFBE7B]/35 bg-[#3A070E]/60 px-4 py-5 shadow-[0_12px_28px_rgba(16,2,5,0.28)]"
+                          >
+                            <p className="font-editorial text-4xl sm:text-5xl font-medium text-[#FAF5EC] tabular-nums leading-none">
+                              {unit.value}
+                            </p>
+                            <p className="mt-2 text-[10px] font-medium tracking-[0.24em] uppercase text-[#DFBE7B]/85">
+                              {unit.label}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </RevealFromSide>
+                  </div>
+
+                  {/* Event Selector — strictly scoped to the events this guest is invited to */}
+                  {eventDetails.length > 1 && (
+                    <div
+                      data-parallax-section="countdown"
+                      data-parallax-speed="0.14"
+                      data-parallax-max="42"
+                      className="mt-8"
+                    >
+                      <RevealFromSide
+                        from="up"
+                        delayMs={240}
+                        durationMs={780}
+                        forceVisible={activeSectionId === 'countdown'}
+                      >
+                        <p className="text-[10px] font-medium tracking-[0.26em] uppercase text-[#EAD29F]/75 mb-3">
+                          Choose celebration
+                        </p>
+                        <div
+                          role="group"
+                          aria-label="Choose event to count down to"
+                          data-testid="countdown-event-selector"
+                          className="flex flex-wrap items-center justify-center gap-2"
                         >
-                          {ev.title}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
+                          {eventDetails.map((ev) => {
+                            const isSelected = countdownTargetEvent.id === ev.id;
+                            return (
+                              <button
+                                key={ev.id}
+                                type="button"
+                                onClick={() => setSelectedCountdownEventId(ev.id)}
+                                aria-pressed={isSelected}
+                                data-testid={`countdown-select-${ev.id}`}
+                                className={`rounded-lg border px-3.5 py-2 text-xs font-medium tracking-wide transition-colors cursor-pointer ${
+                                  isSelected
+                                    ? 'border-[#DFBE7B] bg-[#DFBE7B] text-[#3A070E] shadow-sm'
+                                    : 'border-[#DFBE7B]/40 bg-[#3A070E]/50 text-[#FAF5EC] hover:bg-[#63111D]/80'
+                                }`}
+                              >
+                                {ev.title}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </RevealFromSide>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -2307,30 +2425,37 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                   data-parallax-max="44"
                   className="mb-4 sm:mb-5"
                 >
-                  <button
-                    type="button"
-                    onClick={handleOpenRsvpDialog}
-                    data-testid="open-rsvp-dialog-button"
-                    className="w-full rounded-xl bg-[#4D0A14] border border-[#DFBE7B]/75 px-6 py-3.5 sm:py-4 text-center text-[#FAF5EC] shadow-[0_14px_34px_rgba(77,10,20,0.18)] hover:bg-[#63111D] transition-colors cursor-pointer group"
+                  <RevealFromSide
+                    from="left"
+                    delayMs={60}
+                    durationMs={780}
+                    forceVisible={showClosingAmbient}
                   >
-                    <span className="block text-[10px] sm:text-[11px] font-semibold tracking-[0.28em] uppercase text-[#DFBE7B]">
-                      {hasSavedRsvp ? 'Response Recorded' : 'Kindly Respond'}
-                    </span>
-                    <span className="mt-0.5 block font-editorial text-2xl sm:text-3xl font-medium text-[#FAF5EC] tracking-wide">
-                      {hasSavedRsvp ? 'Update Your RSVP' : 'RSVP'}
-                    </span>
-                  </button>
-
-                  {rsvpSavedMessage && (
-                    <div
-                      role="status"
-                      data-testid="rsvp-saved-banner"
-                      className="mt-3 flex items-center justify-center gap-2 rounded-xl border border-[#1E5E3E]/30 bg-[#1E5E3E]/10 px-4 py-2.5 text-xs font-medium text-[#1E5E3E]"
+                    <button
+                      type="button"
+                      onClick={handleOpenRsvpDialog}
+                      data-testid="open-rsvp-dialog-button"
+                      className="w-full rounded-xl bg-[#4D0A14] border border-[#DFBE7B]/75 px-6 py-3.5 sm:py-4 text-center text-[#FAF5EC] shadow-[0_14px_34px_rgba(77,10,20,0.18)] hover:bg-[#63111D] transition-colors cursor-pointer group"
                     >
-                      <CheckCircle2 className="w-4 h-4 shrink-0" aria-hidden="true" />
-                      <span>{rsvpSavedMessage}</span>
-                    </div>
-                  )}
+                      <span className="block text-[10px] sm:text-[11px] font-semibold tracking-[0.28em] uppercase text-[#DFBE7B]">
+                        {hasSavedRsvp ? 'Response Recorded' : 'Kindly Respond'}
+                      </span>
+                      <span className="mt-0.5 block font-editorial text-2xl sm:text-3xl font-medium text-[#FAF5EC] tracking-wide">
+                        {hasSavedRsvp ? 'Update Your RSVP' : 'RSVP'}
+                      </span>
+                    </button>
+
+                    {rsvpSavedMessage && (
+                      <div
+                        role="status"
+                        data-testid="rsvp-saved-banner"
+                        className="mt-3 flex items-center justify-center gap-2 rounded-xl border border-[#1E5E3E]/30 bg-[#1E5E3E]/10 px-4 py-2.5 text-xs font-medium text-[#1E5E3E]"
+                      >
+                        <CheckCircle2 className="w-4 h-4 shrink-0" aria-hidden="true" />
+                        <span>{rsvpSavedMessage}</span>
+                      </div>
+                    )}
+                  </RevealFromSide>
                 </div>
               )}
 
@@ -2340,77 +2465,93 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                 data-parallax-speed="0.22"
                 data-parallax-max="60"
               >
-                <LotusEmblem className="w-10 h-6 mx-auto text-[#C89D54]" />
-
-                <p className="mt-2 font-editorial italic text-xl sm:text-[26px] text-[#4C373A] leading-snug">
-                  {!isGeneric && invitation.displayGuestName && !isReferencePreview
-                    ? `Your presence is the greatest blessing, dear ${invitation.displayGuestName}`
-                    : 'Your presence is the greatest blessing'}
-                </p>
-
-                <AlpanaDivider className="w-40 mx-auto my-2.5 sm:my-3 text-[#C89D54]" />
-
-                <p className="text-[10px] sm:text-[11px] font-medium tracking-[0.28em] uppercase text-[#8E7679]">
-                  With love &amp; regards
-                </p>
-
-                <FamilyPortraitFigure animate={showClosingAmbient} />
-
-                <p
-                  data-testid="closing-family-signature"
-                  className="mt-2.5 font-editorial text-2xl sm:text-[30px] font-medium text-[#4D0A14] leading-snug"
+                <RevealFromSide
+                  from="right"
+                  delayMs={140}
+                  durationMs={840}
+                  forceVisible={showClosingAmbient}
                 >
-                  The Bhattacharya and Kundu Family
-                </p>
+                  <LotusEmblem className="w-10 h-6 mx-auto text-[#C89D54]" />
+                  <p className="mt-2 font-editorial italic text-xl sm:text-[26px] text-[#4C373A] leading-snug">
+                  Please grace us with your presence at the celebrations.
+                  </p>
+                  <p className="mt-2 font-editorial italic text-xl sm:text-[26px] text-[#4C373A] leading-snug">
+                    {!isGeneric && invitation.displayGuestName && !isReferencePreview
+                      ? `Your presence is the greatest blessing, dear ${invitation.displayGuestName}`
+                      : 'Your presence is the greatest blessing'}
+                  </p>
 
-                <p className="mt-1 text-xs font-medium tracking-[0.18em] text-[#8E7679]">
-                  #MedhaWedsSaptarshi
-                </p>
+                  <AlpanaDivider className="w-40 mx-auto my-2.5 sm:my-3 text-[#C89D54]" />
 
-                {/* Side-by-Side Family Contact Buttons: Bhattacharya Family (Left) & Kundu Family (Right) */}
-                <div
-                  data-testid="family-contact-buttons"
-                  className="mt-3.5 grid grid-cols-2 gap-2.5 sm:gap-3.5 max-w-lg mx-auto"
+                  <p className="text-[10px] sm:text-[11px] font-medium tracking-[0.28em] uppercase text-[#8E7679]">
+                    With love &amp; regards
+                  </p>
+
+                  <FamilyPortraitFigure animate={showClosingAmbient} />
+
+                  <p
+                    data-testid="closing-family-signature"
+                    className="mt-2.5 font-editorial text-2xl sm:text-[30px] font-medium text-[#4D0A14] leading-snug"
+                  >
+                    The Bhattacharya and Kundu Family
+                  </p>
+
+                  <p className="mt-1 text-xs font-medium tracking-[0.18em] text-[#8E7679]">
+                    #MedhaWedsSaptarshi
+                  </p>
+                </RevealFromSide>
+
+                <RevealFromSide
+                  from="up"
+                  delayMs={240}
+                  durationMs={780}
+                  forceVisible={showClosingAmbient}
                 >
-                  <button
-                    type="button"
-                    onClick={() => setActiveContactFamily('bhattacharya')}
-                    data-testid="contact-bhattacharya-button"
-                    className="inline-flex items-center justify-center gap-1.5 min-h-[44px] rounded-xl border border-[#DFBE7B] bg-[#FFF9E2] px-3 sm:px-4 py-2 text-[11px] sm:text-xs font-semibold text-[#4D0A14] shadow-xs hover:border-[#9E2A2B]/60 hover:bg-[#F9E8AE] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#9E2A2B]"
+                  {/* Side-by-Side Family Contact Buttons: Bhattacharya Family (Left) & Kundu Family (Right) */}
+                  <div
+                    data-testid="family-contact-buttons"
+                    className="mt-3.5 grid grid-cols-2 gap-2.5 sm:gap-3.5 max-w-lg mx-auto"
                   >
-                    <Phone
-                      className="w-3.5 h-3.5 text-[#9E2A2B] shrink-0"
-                      aria-hidden="true"
-                    />
-                    <span className="leading-tight">
-                      Contact Bhattacharya Family
-                    </span>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveContactFamily('bhattacharya')}
+                      data-testid="contact-bhattacharya-button"
+                      className="inline-flex items-center justify-center gap-1.5 min-h-[44px] rounded-xl border border-[#DFBE7B] bg-[#FFF9E2] px-3 sm:px-4 py-2 text-[11px] sm:text-xs font-semibold text-[#4D0A14] shadow-xs hover:border-[#9E2A2B]/60 hover:bg-[#F9E8AE] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#9E2A2B]"
+                    >
+                      <Phone
+                        className="w-3.5 h-3.5 text-[#9E2A2B] shrink-0"
+                        aria-hidden="true"
+                      />
+                      <span className="leading-tight">
+                        Contact Bhattacharya Family
+                      </span>
+                    </button>
 
-                  <button
-                    type="button"
-                    onClick={() => setActiveContactFamily('kundu')}
-                    data-testid="contact-kundu-button"
-                    className="inline-flex items-center justify-center gap-1.5 min-h-[44px] rounded-xl border border-[#DFBE7B] bg-[#FFF9E2] px-3 sm:px-4 py-2 text-[11px] sm:text-xs font-semibold text-[#4D0A14] shadow-xs hover:border-[#9E2A2B]/60 hover:bg-[#F9E8AE] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#9E2A2B]"
-                  >
-                    <Phone
-                      className="w-3.5 h-3.5 text-[#9E2A2B] shrink-0"
-                      aria-hidden="true"
-                    />
-                    <span className="leading-tight">Contact Kundu Family</span>
-                  </button>
-                </div>
+                    <button
+                      type="button"
+                      onClick={() => setActiveContactFamily('kundu')}
+                      data-testid="contact-kundu-button"
+                      className="inline-flex items-center justify-center gap-1.5 min-h-[44px] rounded-xl border border-[#DFBE7B] bg-[#FFF9E2] px-3 sm:px-4 py-2 text-[11px] sm:text-xs font-semibold text-[#4D0A14] shadow-xs hover:border-[#9E2A2B]/60 hover:bg-[#F9E8AE] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#9E2A2B]"
+                    >
+                      <Phone
+                        className="w-3.5 h-3.5 text-[#9E2A2B] shrink-0"
+                        aria-hidden="true"
+                      />
+                      <span className="leading-tight">Contact Kundu Family</span>
+                    </button>
+                  </div>
 
-                <div className="mt-3 flex justify-center">
-                  <button
-                    type="button"
-                    onClick={() => scrollToSection('hero')}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-[#E6D194] bg-[#FFF9E2]/90 px-4 py-1.5 text-[10px] font-semibold tracking-[0.22em] uppercase text-[#6B4A23] hover:border-[#9E2A2B]/45 hover:text-[#4D0A14] transition-colors cursor-pointer"
-                  >
-                    <ChevronUp className="w-3.5 h-3.5" aria-hidden="true" />
-                    Back to Welcome
-                  </button>
-                </div>
+                  <div className="mt-3 flex justify-center">
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection('hero')}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-[#E6D194] bg-[#FFF9E2]/90 px-4 py-1.5 text-[10px] font-semibold tracking-[0.22em] uppercase text-[#6B4A23] hover:border-[#9E2A2B]/45 hover:text-[#4D0A14] transition-colors cursor-pointer"
+                    >
+                      <ChevronUp className="w-3.5 h-3.5" aria-hidden="true" />
+                      Back to Welcome
+                    </button>
+                  </div>
+                </RevealFromSide>
               </div>
             </div>
           </div>
