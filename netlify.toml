@@ -2,7 +2,7 @@
   command = "bun run build"
   publish = "dist"
 
-# Single-page app fallback: invite links like /MedhaWedsSaptarshi/invite/<code>
+# Single-page app fallback: invite links like /invite/<code>
 # and /studio are handled by client-side routing, so serve index.html for any
 # path that doesn't match a real file.
 [[redirects]]

@@ -24,40 +24,19 @@ service cloud.firestore {
       return resource.data;
     }
 
-    // --- Per-Event RSVP Validation Blueprint ---
+    // --- Per-Event RSVP Validation Blueprint (expression-budget safe for all 6 events) ---
     function isValidEventRsvpEntry(entry, allowAlcohol) {
       return entry is map &&
-        entry.keys().hasAll(['attending', 'headcount', 'foodPreference', 'alcoholPreference']) &&
+        entry.size() == 4 &&
         entry.keys().hasOnly(['attending', 'headcount', 'foodPreference', 'alcoholPreference']) &&
-        entry.attending is string &&
-        entry.attending.size() >= 1 &&
-        entry.attending.size() <= 20 &&
-        entry.attending in ['coming', 'not_coming'] &&
         (
           (
             entry.attending == 'coming' &&
             entry.headcount is int &&
             entry.headcount >= 1 &&
             entry.headcount <= 50 &&
-            (
-              entry.foodPreference == null ||
-              (
-                entry.foodPreference is string &&
-                entry.foodPreference.size() >= 1 &&
-                entry.foodPreference.size() <= 20 &&
-                entry.foodPreference in ['veg', 'non_veg']
-              )
-            ) &&
-            (
-              entry.alcoholPreference == null ||
-              (
-                allowAlcohol &&
-                entry.alcoholPreference is string &&
-                entry.alcoholPreference.size() >= 1 &&
-                entry.alcoholPreference.size() <= 20 &&
-                entry.alcoholPreference in ['alcohol', 'no_alcohol']
-              )
-            )
+            (entry.foodPreference == null || entry.foodPreference == 'veg' || entry.foodPreference == 'non_veg') &&
+            (entry.alcoholPreference == null || (allowAlcohol && (entry.alcoholPreference == 'alcohol' || entry.alcoholPreference == 'no_alcohol')))
           ) || (
             entry.attending == 'not_coming' &&
             entry.headcount == null &&
@@ -70,7 +49,7 @@ service cloud.firestore {
     function isValidRsvp(rsvp) {
       return rsvp == null || (
         rsvp is map &&
-        rsvp.keys().hasAll(['byEvent', 'respondedAt']) &&
+        rsvp.size() == 2 &&
         rsvp.keys().hasOnly(['byEvent', 'respondedAt']) &&
         rsvp.byEvent is map &&
         rsvp.byEvent.keys().hasOnly([

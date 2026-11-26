@@ -17,10 +17,12 @@ test('firestore.rules enforces side enum, withFamily boolean, per-event RSVP wit
   assert.match(rulesSource, /data\.withFamily is bool/);
   assert.match(rulesSource, /function isValidEventRsvpEntry\(entry, allowAlcohol\)/);
   assert.match(rulesSource, /function isValidRsvp\(rsvp\)/);
-  assert.match(rulesSource, /entry\.attending in \['coming', 'not_coming'\]/);
+  assert.match(rulesSource, /entry\.size\(\) == 4 &&[\s\S]*entry\.keys\(\)\.hasOnly\(\['attending', 'headcount', 'foodPreference', 'alcoholPreference'\]\)/);
+  assert.match(rulesSource, /entry\.attending == 'coming'/);
+  assert.match(rulesSource, /entry\.attending == 'not_coming'/);
   assert.match(rulesSource, /entry\.headcount is int &&[\s\S]*entry\.headcount >= 1 &&[\s\S]*entry\.headcount <= 50/);
-  assert.match(rulesSource, /entry\.foodPreference in \['veg', 'non_veg'\]/);
-  assert.match(rulesSource, /allowAlcohol &&[\s\S]*entry\.alcoholPreference in \['alcohol', 'no_alcohol'\]/);
+  assert.match(rulesSource, /entry\.foodPreference == 'veg' \|\| entry\.foodPreference == 'non_veg'/);
+  assert.match(rulesSource, /allowAlcohol && \(entry\.alcoholPreference == 'alcohol' \|\| entry\.alcoholPreference == 'no_alcohol'\)/);
   assert.match(rulesSource, /isValidEventRsvpEntry\(rsvp\.byEvent\['mehendi-cocktail'\], true\)/);
   assert.match(rulesSource, /isValidEventRsvpEntry\(rsvp\.byEvent\['wedding'\], false\)/);
   assert.match(rulesSource, /rsvp\.byEvent\.keys\(\)\.hasOnly\(\[/);

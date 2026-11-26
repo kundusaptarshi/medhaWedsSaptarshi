@@ -18,21 +18,16 @@ import type {
   GuestSide,
   InvitationRecord,
   InvitationRsvp,
-  RsvpAlcoholPreference,
-  RsvpFoodPreference,
   WeddingEvent,
 } from '../types';
 import {
   BLUEPRINT_LIMITS,
-  eventSupportsAlcohol,
   formatGuestDisplayName,
   generateUniqueSlug,
   getInvitationSortTimestamp,
   normalizeGuestNames,
+  normalizeRsvpByEvent,
   resolveInvitedEvents,
-  RSVP_HEADCOUNT_MAX,
-  RSVP_HEADCOUNT_MIN,
-  VALID_EVENT_ID_SET,
 } from '../utils/invitationLogic';
 
 const STUDIO_AUTHOR_ID = 'studio-host';
@@ -47,69 +42,13 @@ function toMillis(value: unknown, fallback = Date.now()): number {
   return fallback;
 }
 
-function parseEventRsvpEntry(
-  eventId: string,
-  raw: unknown
-): EventRsvpEntry | null {
-  if (!raw || typeof raw !== 'object') return null;
-  const obj = raw as Record<string, unknown>;
-  const attending = obj.attending;
-  if (attending !== 'coming' && attending !== 'not_coming') return null;
-
-  if (attending === 'not_coming') {
-    return {
-      attending: 'not_coming',
-      headcount: null,
-      foodPreference: null,
-      alcoholPreference: null,
-    };
-  }
-
-  const rawHeadcount = obj.headcount;
-  const headcount =
-    typeof rawHeadcount === 'number' &&
-    Number.isInteger(rawHeadcount) &&
-    rawHeadcount >= RSVP_HEADCOUNT_MIN &&
-    rawHeadcount <= RSVP_HEADCOUNT_MAX
-      ? rawHeadcount
-      : 1;
-
-  const foodPreference: RsvpFoodPreference | null =
-    obj.foodPreference === 'veg' || obj.foodPreference === 'non_veg'
-      ? obj.foodPreference
-      : null;
-
-  const alcoholPreference: RsvpAlcoholPreference | null =
-    eventSupportsAlcohol(eventId) &&
-    (obj.alcoholPreference === 'alcohol' || obj.alcoholPreference === 'no_alcohol')
-      ? obj.alcoholPreference
-      : null;
-
-  return {
-    attending: 'coming',
-    headcount,
-    foodPreference,
-    alcoholPreference,
-  };
-}
-
 function parseFirestoreRsvp(raw: unknown): InvitationRsvp | null {
   if (!raw || typeof raw !== 'object') return null;
   const obj = raw as Record<string, unknown>;
   const rawByEvent = obj.byEvent;
   if (!rawByEvent || typeof rawByEvent !== 'object') return null;
 
-  const byEvent: Record<string, EventRsvpEntry> = {};
-  for (const [eventId, rawEntry] of Object.entries(
-    rawByEvent as Record<string, unknown>
-  )) {
-    if (!VALID_EVENT_ID_SET.has(eventId)) continue;
-    const parsed = parseEventRsvpEntry(eventId, rawEntry);
-    if (parsed) {
-      byEvent[eventId] = parsed;
-    }
-  }
-
+  const byEvent = normalizeRsvpByEvent(rawByEvent as Record<string, unknown>);
   if (Object.keys(byEvent).length === 0) return null;
 
   return {
@@ -236,7 +175,7 @@ export async function createInvitation(
 
 /**
  * Persists a nameless generic invitation in Firestore under a unique DB guestCode
- * so its link & WhatsApp share URL is cleanly /MedhaWedsSaptarshi/invite/<guestCode>
+ * so its link & WhatsApp share URL is cleanly /invite/<guestCode>
  * with no query parameters exposing event IDs or side.
  */
 export async function createGenericInvitation(
@@ -331,55 +270,33 @@ export async function updateInvitation(
 
 /**
  * Records, updates, or clears per-event RSVP responses on an invitation document.
+ * Strictly normalizes every event entry for Firestore isValidEventRsvpEntry rules.
  * When byEvent is empty (all events cleared), saves rsvp: null.
  */
 export async function submitInvitationRsvp(
   slug: string,
   rawByEvent: Record<string, EventRsvpEntry>
 ): Promise<InvitationRsvp | null> {
-  const sanitizedByEvent: Record<string, EventRsvpEntry> = {};
-
-  for (const [eventId, entry] of Object.entries(rawByEvent)) {
-    if (!VALID_EVENT_ID_SET.has(eventId)) continue;
-    if (entry.attending === 'not_coming') {
-      sanitizedByEvent[eventId] = {
-        attending: 'not_coming',
-        headcount: null,
-        foodPreference: null,
-        alcoholPreference: null,
-      };
-    } else if (entry.attending === 'coming') {
-      const headcount =
-        typeof entry.headcount === 'number' && Number.isInteger(entry.headcount)
-          ? Math.max(RSVP_HEADCOUNT_MIN, Math.min(RSVP_HEADCOUNT_MAX, entry.headcount))
-          : 1;
-      sanitizedByEvent[eventId] = {
-        attending: 'coming',
-        headcount,
-        foodPreference:
-          entry.foodPreference === 'veg' || entry.foodPreference === 'non_veg'
-            ? entry.foodPreference
-            : null,
-        alcoholPreference:
-          eventSupportsAlcohol(eventId) &&
-          (entry.alcoholPreference === 'alcohol' ||
-            entry.alcoholPreference === 'no_alcohol')
-            ? entry.alcoholPreference
-            : null,
-      };
-    }
-  }
-
+  const sanitizedByEvent = normalizeRsvpByEvent(rawByEvent);
   const hasAnyResponse = Object.keys(sanitizedByEvent).length > 0;
+  const rsvpPayload = hasAnyResponse
+    ? {
+        byEvent: sanitizedByEvent,
+        respondedAt: serverTimestamp(),
+      }
+    : null;
+
+  console.log(
+    `[RSVP Submit] Normalized rsvp payload for invitations/${slug}:`,
+    hasAnyResponse
+      ? { byEvent: sanitizedByEvent, respondedAt: 'serverTimestamp()' }
+      : null
+  );
+
   const path = `invitations/${slug}`;
   try {
     await updateDoc(doc(db, 'invitations', slug), {
-      rsvp: hasAnyResponse
-        ? {
-            byEvent: sanitizedByEvent,
-            respondedAt: serverTimestamp(),
-          }
-        : null,
+      rsvp: rsvpPayload,
       updatedAt: serverTimestamp(),
     });
 

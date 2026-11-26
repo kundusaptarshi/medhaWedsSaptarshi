@@ -19,6 +19,9 @@ import {
   formatGuestDisplayName,
   generateUniqueSlug,
   getCanonicalStudioTargetUrl,
+  normalizeEventRsvpEntry,
+  normalizeHeadcount,
+  normalizeRsvpByEvent,
   parseGenericInviteParams,
   parseInviteSlugFromPath,
   resolveInvitedEvents,
@@ -137,21 +140,18 @@ test('generateUniqueSlug creates guaranteed-unique numerical IDs and never overw
   assert.ok(!used.includes(accentedName));
 });
 
-test('buildInvitationUrl, buildBrandedDisplayPath, and parseInviteSlugFromPath use /MedhaWedsSaptarshi/invite/<guestCode> with legacy /invite fallback', () => {
-  const url = buildInvitationUrl('48291736', 'https://example.com');
-  assert.equal(url, 'https://example.com/MedhaWedsSaptarshi/invite/48291736');
-  assert.equal(
-    buildBrandedDisplayPath('48291736'),
-    '/MedhaWedsSaptarshi/invite/48291736'
-  );
+test('buildInvitationUrl, buildBrandedDisplayPath, and parseInviteSlugFromPath resolve from root /invite/<guestCode>', () => {
+  const url = buildInvitationUrl('96329917', 'https://medhawedssaptarshi.pages.dev');
+  assert.equal(url, 'https://medhawedssaptarshi.pages.dev/invite/96329917');
+  assert.equal(buildBrandedDisplayPath('96329917'), '/invite/96329917');
 
-  assert.equal(parseInviteSlugFromPath('/MedhaWedsSaptarshi/invite/48291736'), '48291736');
-  assert.equal(parseInviteSlugFromPath('/MedhaWedsSaptarshi/invite/48291736/'), '48291736');
-  assert.equal(parseInviteSlugFromPath('/invite/48291736'), '48291736');
+  assert.equal(parseInviteSlugFromPath('/invite/96329917'), '96329917');
+  assert.equal(parseInviteSlugFromPath('/invite/96329917/'), '96329917');
   assert.equal(parseInviteSlugFromPath('/invite/rahul-family'), 'rahul-family');
-  assert.equal(parseInviteSlugFromPath('/invite/90218475/'), '90218475');
+  assert.equal(parseInviteSlugFromPath('/invite/reference'), 'reference');
   assert.equal(parseInviteSlugFromPath('/'), null);
   assert.equal(parseInviteSlugFromPath('/studio'), null);
+  assert.equal(parseInviteSlugFromPath('/MedhaWedsSaptarshi/invite/96329917'), null);
   assert.equal(parseInviteSlugFromPath('/MedhaWedsSaptarshi/studio'), null);
 });
 
@@ -159,8 +159,8 @@ test('STUDIO_PATH, STUDIO_DISPLAY_PATH, buildStudioUrl, and getCanonicalStudioTa
   assert.equal(STUDIO_PATH, '/studio');
   assert.equal(STUDIO_DISPLAY_PATH, '/studio');
   assert.equal(
-    buildStudioUrl('https://example.com'),
-    'https://example.com/studio'
+    buildStudioUrl('https://medhawedssaptarshi.pages.dev'),
+    'https://medhawedssaptarshi.pages.dev/studio'
   );
   // Root, legacy studio path, and stray hashes normalize cleanly to /studio
   assert.equal(getCanonicalStudioTargetUrl('/', '', ''), '/studio');
@@ -185,23 +185,11 @@ test('STUDIO_PATH, STUDIO_DISPLAY_PATH, buildStudioUrl, and getCanonicalStudioTa
   assert.equal(getCanonicalStudioTargetUrl('/studio', '', '?foo=1'), null);
   // Invite routes are never rewritten to studio
   assert.equal(
-    getCanonicalStudioTargetUrl(
-      '/MedhaWedsSaptarshi/invite/reference',
-      '#us-through-the-years',
-      ''
-    ),
-    null
-  );
-  assert.equal(
-    getCanonicalStudioTargetUrl('/MedhaWedsSaptarshi/invite/48291736', '', ''),
-    null
-  );
-  assert.equal(
     getCanonicalStudioTargetUrl('/invite/reference', '#us-through-the-years', ''),
     null
   );
   assert.equal(
-    getCanonicalStudioTargetUrl('/invite/48291736', '', ''),
+    getCanonicalStudioTargetUrl('/invite/96329917', '', ''),
     null
   );
 });
@@ -243,7 +231,7 @@ test('validateInvitationDraft enforces side, guest names, and selected events', 
 });
 
 test('buildWhatsAppMessage and buildWhatsAppShareUrl match exact final copy with invitation-specific URL', () => {
-  const inviteUrl = 'https://example.com/MedhaWedsSaptarshi/invite/48291736';
+  const inviteUrl = 'https://medhawedssaptarshi.pages.dev/invite/96329917';
   const expected = `❤️ *A WEDDING INVITATION* ❤️
 
 Some of life's most beautiful moments become even more special when shared with the people we hold dear.
@@ -297,21 +285,21 @@ test('generic invitation URL builder, parser, validation, and WhatsApp share wor
   const url = buildGenericInvitationUrl(
     'groom',
     ['reception', 'mehendi-cocktail', 'wedding'],
-    'https://example.com'
+    'https://medhawedssaptarshi.pages.dev'
   );
   assert.equal(
     url,
-    'https://example.com/MedhaWedsSaptarshi/invite/generic?side=groom&events=mehendi-cocktail%2Cwedding%2Creception'
+    'https://medhawedssaptarshi.pages.dev/invite/generic?side=groom&events=mehendi-cocktail%2Cwedding%2Creception'
   );
 
   const parsed = parseGenericInviteParams(new URL(url).search);
   assert.equal(parsed.side, 'groom');
   assert.deepEqual(parsed.eventIds, ['mehendi-cocktail', 'wedding', 'reception']);
 
-  const dbGenericUrl = buildInvitationUrl('51928374', 'https://example.com');
+  const dbGenericUrl = buildInvitationUrl('51928374', 'https://medhawedssaptarshi.pages.dev');
   assert.equal(
     dbGenericUrl,
-    'https://example.com/MedhaWedsSaptarshi/invite/51928374'
+    'https://medhawedssaptarshi.pages.dev/invite/51928374'
   );
 
   const msg = buildGenericWhatsAppMessage(dbGenericUrl);
@@ -476,4 +464,131 @@ test('summarizePerEventRsvps and per-event formatters compute accurate headcount
   assert.equal(formatEventHeadcountLabel(undefined, false), '—');
   assert.equal(formatEventFoodLabel(undefined), '—');
   assert.equal(formatEventAlcoholLabel(undefined, 'mehendi-cocktail'), '—');
+});
+
+test('normalizeHeadcount, normalizeEventRsvpEntry, and normalizeRsvpByEvent strictly satisfy Firestore isValidEventRsvpEntry rules across all 6 events', () => {
+  // Headcount parsing with parseInt + clamping [1, 50] + default 1
+  assert.equal(normalizeHeadcount('4'), 4);
+  assert.equal(normalizeHeadcount(12), 12);
+  assert.equal(normalizeHeadcount('0'), 1);
+  assert.equal(normalizeHeadcount('-3'), 1);
+  assert.equal(normalizeHeadcount('99'), 50);
+  assert.equal(normalizeHeadcount(''), 1);
+  assert.equal(normalizeHeadcount(undefined), 1);
+  assert.equal(normalizeHeadcount(null), 1);
+  assert.equal(normalizeHeadcount('abc'), 1);
+
+  // Unknown event ID returns null
+  assert.equal(
+    normalizeEventRsvpEntry('sangeet', { attending: 'coming', headcount: 2 }),
+    null
+  );
+
+  // Full 6-event payload with dirty fields, missing keys, empty strings, out-of-range headcounts,
+  // alcohol set on non-mehendi events, and non-null values on not_coming
+  const normalizedAllSix = normalizeRsvpByEvent({
+    'mehendi-cocktail': {
+      attending: 'coming',
+      headcount: '3',
+      foodPreference: 'non_veg',
+      alcoholPreference: 'alcohol',
+      extraRogueKey: 'strip-me',
+    },
+    aiburobhat: {
+      attending: 'coming',
+      headcount: '',
+      foodPreference: '',
+      alcoholPreference: 'alcohol', // MUST be forced to null
+    },
+    haldi: {
+      attending: 'coming',
+      headcount: '75', // MUST clamp to 50
+      foodPreference: 'veg',
+      // alcoholPreference missing -> MUST be explicitly null
+    },
+    wedding: {
+      attending: 'coming',
+      headcount: '0', // MUST clamp to 1
+      foodPreference: 'invalid_food', // MUST become null
+      alcoholPreference: 'no_alcohol', // MUST be forced to null
+    },
+    boubhat: {
+      attending: 'not_coming',
+      headcount: 5, // MUST be null
+      foodPreference: 'veg', // MUST be null
+      alcoholPreference: 'alcohol', // MUST be null
+    },
+    reception: {
+      attending: 'coming',
+      headcount: 2,
+      foodPreference: 'non_veg',
+      alcoholPreference: '',
+    },
+    'invalid-event': {
+      attending: 'coming',
+      headcount: 1,
+      foodPreference: 'veg',
+      alcoholPreference: null,
+    },
+  });
+
+  assert.deepEqual(Object.keys(normalizedAllSix), [
+    'mehendi-cocktail',
+    'aiburobhat',
+    'haldi',
+    'wedding',
+    'boubhat',
+    'reception',
+  ]);
+
+  for (const entry of Object.values(normalizedAllSix)) {
+    assert.deepEqual(Object.keys(entry).sort(), [
+      'alcoholPreference',
+      'attending',
+      'foodPreference',
+      'headcount',
+    ]);
+    for (const val of Object.values(entry)) {
+      assert.notEqual(val, undefined);
+    }
+  }
+
+  assert.deepEqual(normalizedAllSix, {
+    'mehendi-cocktail': {
+      attending: 'coming',
+      headcount: 3,
+      foodPreference: 'non_veg',
+      alcoholPreference: 'alcohol',
+    },
+    aiburobhat: {
+      attending: 'coming',
+      headcount: 1,
+      foodPreference: null,
+      alcoholPreference: null,
+    },
+    haldi: {
+      attending: 'coming',
+      headcount: 50,
+      foodPreference: 'veg',
+      alcoholPreference: null,
+    },
+    wedding: {
+      attending: 'coming',
+      headcount: 1,
+      foodPreference: null,
+      alcoholPreference: null,
+    },
+    boubhat: {
+      attending: 'not_coming',
+      headcount: null,
+      foodPreference: null,
+      alcoholPreference: null,
+    },
+    reception: {
+      attending: 'coming',
+      headcount: 2,
+      foodPreference: 'non_veg',
+      alcoholPreference: null,
+    },
+  });
 });

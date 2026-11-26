@@ -4,6 +4,8 @@ import type {
   GuestSide,
   InvitationRecord,
   InvitationRsvp,
+  RsvpAlcoholPreference,
+  RsvpFoodPreference,
   ValidationResult,
   WeddingEvent,
 } from '../types';
@@ -126,7 +128,7 @@ export const STUDIO_PATH = '/studio';
 export const STUDIO_DISPLAY_PATH = '/studio';
 
 /**
- * Builds the canonical invitation URL for a guest code (/MedhaWedsSaptarshi/invite/<guestCode>).
+ * Builds the canonical invitation URL for a guest code (/invite/<guestCode>).
  */
 export function buildInvitationUrl(slug: string, origin?: string): string {
   const resolvedOrigin =
@@ -134,8 +136,8 @@ export function buildInvitationUrl(slug: string, origin?: string): string {
       ? origin.replace(/\/+$/, '')
       : typeof window !== 'undefined'
         ? window.location.origin
-        : `https://${BRAND_PREFIX}.com`;
-  return `${resolvedOrigin}/${BRAND_PREFIX}/invite/${slug}`;
+        : 'https://medhawedssaptarshi.pages.dev';
+  return `${resolvedOrigin}/invite/${slug}`;
 }
 
 /**
@@ -147,7 +149,7 @@ export function buildStudioUrl(origin?: string): string {
       ? origin.replace(/\/+$/, '')
       : typeof window !== 'undefined'
         ? window.location.origin
-        : `https://${BRAND_PREFIX}.com`;
+        : 'https://medhawedssaptarshi.pages.dev';
   return `${resolvedOrigin}${STUDIO_PATH}`;
 }
 
@@ -174,22 +176,19 @@ export function getCanonicalStudioTargetUrl(
 }
 
 /**
- * Short display path shown in compact cards (/MedhaWedsSaptarshi/invite/<guestCode>).
+ * Short display path shown in compact cards (/invite/<guestCode>).
  */
 export function buildBrandedDisplayPath(slug: string): string {
-  return `/${BRAND_PREFIX}/invite/${slug}`;
+  return `/invite/${slug}`;
 }
 
 /**
- * Extracts a valid invitation slug from /MedhaWedsSaptarshi/invite/:slug (also accepts /invite/:slug).
+ * Extracts a valid invitation slug from /invite/:slug.
  */
 export function parseInviteSlugFromPath(pathname: string): string | null {
   const cleaned = pathname.replace(/\/+$/, '');
-  const brandedMatch = cleaned.match(/^\/MedhaWedsSaptarshi\/invite\/([a-z0-9-]+)$/i);
-  if (brandedMatch) return brandedMatch[1].toLowerCase();
-
-  const shortMatch = cleaned.match(/^\/invite\/([a-z0-9-]+)$/i);
-  if (shortMatch) return shortMatch[1].toLowerCase();
+  const match = cleaned.match(/^\/invite\/([a-z0-9-]+)$/i);
+  if (match) return match[1].toLowerCase();
 
   return null;
 }
@@ -422,13 +421,118 @@ export const RSVP_HEADCOUNT_MIN = 1;
 export const RSVP_HEADCOUNT_MAX = 50;
 export const ALCOHOL_ENABLED_EVENT_ID = 'mehendi-cocktail';
 
-export const VALID_EVENT_ID_SET = new Set(WEDDING_EVENTS.map((ev) => ev.id));
+export const VALID_RSVP_EVENT_IDS = [
+  'mehendi-cocktail',
+  'aiburobhat',
+  'haldi',
+  'wedding',
+  'boubhat',
+  'reception',
+] as const;
+
+export const VALID_EVENT_ID_SET = new Set<string>(VALID_RSVP_EVENT_IDS);
 
 /**
  * Alcohol / No Alcohol selection applies strictly to Mehendi/Cocktail.
  */
 export function eventSupportsAlcohol(eventId: string): boolean {
   return eventId === ALCOHOL_ENABLED_EVENT_ID;
+}
+
+/**
+ * Parses a headcount input with Number.parseInt(value, 10) and clamps it to an
+ * integer in [1, 50], defaulting to 1 if empty or invalid.
+ */
+export function normalizeHeadcount(value: unknown): number {
+  if (value === null || value === undefined) {
+    return RSVP_HEADCOUNT_MIN;
+  }
+  const rawStr = typeof value === 'string' ? value.trim() : String(value).trim();
+  if (rawStr === '') {
+    return RSVP_HEADCOUNT_MIN;
+  }
+  const parsed = Number.parseInt(rawStr, 10);
+  if (!Number.isInteger(parsed)) {
+    return RSVP_HEADCOUNT_MIN;
+  }
+  return Math.max(RSVP_HEADCOUNT_MIN, Math.min(RSVP_HEADCOUNT_MAX, parsed));
+}
+
+/**
+ * Strictly normalizes a single per-event RSVP entry to satisfy Firestore
+ * isValidEventRsvpEntry rules:
+ * - Always returns the exact 4 keys: attending, headcount, foodPreference, alcoholPreference.
+ * - For 'coming': integer headcount in [1, 50] (default 1), foodPreference in 'veg' | 'non_veg' | null,
+ *   and alcoholPreference in 'alcohol' | 'no_alcohol' | null ONLY for 'mehendi-cocktail' (always null otherwise).
+ * - For 'not_coming': headcount, foodPreference, and alcoholPreference are always null.
+ * - Returns null for unanswered or invalid entries so callers omit them from byEvent.
+ */
+export function normalizeEventRsvpEntry(
+  eventId: string,
+  raw: unknown
+): EventRsvpEntry | null {
+  if (!VALID_EVENT_ID_SET.has(eventId)) return null;
+  if (!raw || typeof raw !== 'object') return null;
+
+  const entry = raw as Record<string, unknown>;
+  const attending = entry.attending;
+
+  if (attending === 'not_coming') {
+    return {
+      attending: 'not_coming',
+      headcount: null,
+      foodPreference: null,
+      alcoholPreference: null,
+    };
+  }
+
+  if (attending === 'coming') {
+    const headcount = normalizeHeadcount(entry.headcount);
+    const foodPreference: RsvpFoodPreference | null =
+      entry.foodPreference === 'veg' || entry.foodPreference === 'non_veg'
+        ? entry.foodPreference
+        : null;
+    const alcoholPreference: RsvpAlcoholPreference | null =
+      eventSupportsAlcohol(eventId) &&
+      (entry.alcoholPreference === 'alcohol' ||
+        entry.alcoholPreference === 'no_alcohol')
+        ? entry.alcoholPreference
+        : null;
+
+    return {
+      attending: 'coming',
+      headcount,
+      foodPreference,
+      alcoholPreference,
+    };
+  }
+
+  return null;
+}
+
+/**
+ * Strictly normalizes a complete rsvp.byEvent map before saving to or reading from Firestore.
+ * Only includes valid wedding event IDs that have an answered 'coming' or 'not_coming' entry.
+ */
+export function normalizeRsvpByEvent(
+  rawByEvent: Record<string, unknown> | null | undefined
+): Record<string, EventRsvpEntry> {
+  const normalized: Record<string, EventRsvpEntry> = {};
+  if (!rawByEvent || typeof rawByEvent !== 'object') {
+    return normalized;
+  }
+
+  for (const eventId of VALID_RSVP_EVENT_IDS) {
+    if (!Object.prototype.hasOwnProperty.call(rawByEvent, eventId)) {
+      continue;
+    }
+    const normalizedEntry = normalizeEventRsvpEntry(eventId, rawByEvent[eventId]);
+    if (normalizedEntry) {
+      normalized[eventId] = normalizedEntry;
+    }
+  }
+
+  return normalized;
 }
 
 export interface RsvpSummaryCounts {
@@ -491,7 +595,7 @@ export function validateAndNormalizePerEventRsvp(
   allowHeadcount = true
 ): { valid: boolean; errors: string[]; byEvent: Record<string, EventRsvpEntry> } {
   const errors: string[] = [];
-  const byEvent: Record<string, EventRsvpEntry> = {};
+  const rawByEvent: Record<string, EventRsvpEntry> = {};
   const resolved = resolveInvitedEvents(invitedEventIds);
 
   for (const ev of resolved) {
@@ -501,58 +605,56 @@ export function validateAndNormalizePerEventRsvp(
     }
 
     if (draft.attending === 'not_coming') {
-      byEvent[ev.id] = {
+      const normalizedEntry = normalizeEventRsvpEntry(ev.id, {
         attending: 'not_coming',
         headcount: null,
         foodPreference: null,
         alcoholPreference: null,
-      };
+      });
+      if (normalizedEntry) {
+        rawByEvent[ev.id] = normalizedEntry;
+      }
       continue;
     }
 
     if (draft.attending === 'coming') {
-      let resolvedHeadcount = 1;
+      let resolvedHeadcount = RSVP_HEADCOUNT_MIN;
       if (allowHeadcount) {
         const trimmedCount = draft.headcount.trim();
-        const parsedCount = Number(trimmedCount);
-        if (
-          trimmedCount === '' ||
-          !Number.isInteger(parsedCount) ||
-          parsedCount < RSVP_HEADCOUNT_MIN ||
-          parsedCount > RSVP_HEADCOUNT_MAX
-        ) {
-          errors.push(
-            `${ev.title}: Please enter a whole-number headcount between ${RSVP_HEADCOUNT_MIN} and ${RSVP_HEADCOUNT_MAX}.`
-          );
-          continue;
+        if (trimmedCount !== '') {
+          const isWholeNumber = /^\d+$/.test(trimmedCount);
+          const parsedCount = Number.parseInt(trimmedCount, 10);
+          if (
+            !isWholeNumber ||
+            !Number.isInteger(parsedCount) ||
+            parsedCount < RSVP_HEADCOUNT_MIN ||
+            parsedCount > RSVP_HEADCOUNT_MAX
+          ) {
+            errors.push(
+              `${ev.title}: Please enter a whole-number headcount between ${RSVP_HEADCOUNT_MIN} and ${RSVP_HEADCOUNT_MAX}.`
+            );
+            continue;
+          }
+          resolvedHeadcount = parsedCount;
         }
-        resolvedHeadcount = parsedCount;
       }
 
-      const foodPreference =
-        draft.foodPreference === 'veg' || draft.foodPreference === 'non_veg'
-          ? draft.foodPreference
-          : null;
-      const alcoholPreference =
-        eventSupportsAlcohol(ev.id) &&
-        (draft.alcoholPreference === 'alcohol' ||
-          draft.alcoholPreference === 'no_alcohol')
-          ? draft.alcoholPreference
-          : null;
-
-      byEvent[ev.id] = {
+      const normalizedEntry = normalizeEventRsvpEntry(ev.id, {
         attending: 'coming',
         headcount: resolvedHeadcount,
-        foodPreference,
-        alcoholPreference,
-      };
+        foodPreference: draft.foodPreference,
+        alcoholPreference: draft.alcoholPreference,
+      });
+      if (normalizedEntry) {
+        rawByEvent[ev.id] = normalizedEntry;
+      }
     }
   }
 
   return {
     valid: errors.length === 0,
     errors,
-    byEvent,
+    byEvent: normalizeRsvpByEvent(rawByEvent),
   };
 }
 

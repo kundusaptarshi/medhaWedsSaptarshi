@@ -364,10 +364,10 @@ function StudioDashboard({ onPreviewInvite }: StudioDashboardProps) {
 
           <div className="shrink-0 flex flex-wrap items-center gap-2.5">
             <a
-              href="/MedhaWedsSaptarshi/invite/reference"
+              href="/invite/reference"
               onClick={(e) => {
                 e.preventDefault();
-                onPreviewInvite('/MedhaWedsSaptarshi/invite/reference');
+                onPreviewInvite('/invite/reference');
               }}
               className="inline-flex items-center gap-2 rounded-xl border border-[#DFBE7B]/50 bg-[#3A070E]/60 px-4 py-2.5 text-sm font-medium text-[#FAF5EC] hover:bg-[#63111D] transition-colors whitespace-nowrap"
             >
