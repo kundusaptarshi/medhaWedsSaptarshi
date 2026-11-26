@@ -100,7 +100,7 @@ const GROOM_HOUSE_DETAILS = {
 
 const SPACE_CIRCLE_CLUB_VENUE = {
   venueName: 'Space Circle Club',
-  venueAddress: 'Kolkata',
+  venueAddress: 'VIP Road, Kolkata',
   directionsUrl:
     'https://www.google.com/maps/search/?api=1&query=Space+Circle+Club+Kolkata',
   mobileDirectionsUrl: 'https://maps.app.goo.gl/2idBMsrrdSpuYimE8',

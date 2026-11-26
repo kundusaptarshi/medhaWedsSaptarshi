@@ -164,7 +164,7 @@ test('getAllWeddingEventDetails resolves all 6 events in 2027 with Bride Haldi a
   const groomHaldi = groomEvents[2];
   const genericHaldi = genericEvents[2];
   assert.equal(brideHaldi.sideSpecific, true);
-  assert.equal(formatEventLocationLine(brideHaldi), 'Space Circle Club, Kolkata');
+  assert.equal(formatEventLocationLine(brideHaldi), 'Space Circle Club, VIP Road, Kolkata');
   assert.equal(
     brideHaldi.directionsUrl,
     'https://www.google.com/maps/search/?api=1&query=Space+Circle+Club+Kolkata'
@@ -214,6 +214,10 @@ test('getAllWeddingEventDetails resolves all 6 events in 2027 with Bride Haldi a
 
   // Events 4, 5, 6 exact desktop + mobile Google Maps links and /videos/*.mp4 paths
   assert.equal(brideEvents[3].venueName, 'Space Circle Club');
+  assert.equal(
+    formatEventLocationLine(brideEvents[3]),
+    'Space Circle Club, VIP Road, Kolkata'
+  );
   assert.equal(
     brideEvents[3].directionsUrl,
     'https://www.google.com/maps/search/?api=1&query=Space+Circle+Club+Kolkata'
