@@ -40,6 +40,10 @@ import {
   validateAndNormalizePerEventRsvp,
 } from '../utils/invitationLogic';
 import {
+  collectInviteVideoUrls,
+  eventVideoCache,
+} from '../utils/eventVideoCache';
+import {
   computeCountdownParts,
   detectBrowserMobileDevice,
   getEventDirectionsState,
@@ -163,6 +167,14 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
     () => resolveEventDetails(invitedEventIds, activeSide),
     [invitedEventIds, activeSide]
   );
+
+  // Proactively warm all invited celebration videos into the shared RAM Blob cache
+  // as soon as the invitation's events are known (while the guest is on Curtain/Hero).
+  useEffect(() => {
+    if (eventDetails.length === 0) return;
+    const allUrls = collectInviteVideoUrls(eventDetails);
+    eventVideoCache.preload(allUrls, { concurrency: 3 });
+  }, [eventDetails]);
   const [isMobileDevice, setIsMobileDevice] = useState<boolean>(() =>
     detectBrowserMobileDevice()
   );
@@ -381,6 +393,13 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
           search: resolvedSearch,
           invitationSide: result.invitation.side,
         });
+        // Start warming the invited celebration videos immediately before React commits
+        eventVideoCache.preload(
+          collectInviteVideoUrls(
+            resolveEventDetails(result.invitation.eventIds, effectiveMode)
+          ),
+          { concurrency: 3 }
+        );
         setActiveSide(effectiveMode);
         setInvitation(result.invitation);
         setInvitedEventIds(result.invitation.eventIds);

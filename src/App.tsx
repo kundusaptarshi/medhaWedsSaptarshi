@@ -40,6 +40,11 @@ import {
   validateInvitationDraft,
   WEDDING_EVENTS,
 } from './utils/invitationLogic';
+import { ALL_WEDDING_EVENT_DETAILS } from './data/weddingEventDetails';
+import {
+  collectInviteVideoUrls,
+  eventVideoCache,
+} from './utils/eventVideoCache';
 import { parseSideQueryParam } from './utils/invitePresentation';
 
 interface StudioDashboardProps {
@@ -103,6 +108,18 @@ function StudioDashboard({ onPreviewInvite }: StudioDashboardProps) {
       (err) => setRuntimeError(err)
     );
     return unsubscribe;
+  }, []);
+
+  // Gently warm all celebration videos into the shared RAM Blob cache while in Studio
+  // so clicking "Preview invitation" after creating a new invite renders videos in 0ms.
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      eventVideoCache.preload(
+        collectInviteVideoUrls(ALL_WEDDING_EVENT_DETAILS),
+        { concurrency: 2 }
+      );
+    }, 500);
+    return () => window.clearTimeout(timer);
   }, []);
 
   if (runtimeError) {
@@ -600,6 +617,7 @@ export default function App() {
     <ErrorBoundary>
       {inviteSlug ? (
         <GuestInviteView
+          key={inviteSlug}
           slug={inviteSlug}
           searchOverride={route.search}
           onBackToStudio={showBackToStudio ? handleReturnToStudio : undefined}
