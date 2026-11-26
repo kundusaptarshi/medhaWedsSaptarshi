@@ -2800,7 +2800,7 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                   type="button"
                   onClick={() => setRsvpDialogOpen(false)}
                   disabled={submittingRsvp}
-                  className="rounded-xl border border-[#E6D194] bg-[#FFF9E2] px-5 py-2.5 text-sm font-medium text-[#4C373A] hover:bg-[#F9E8AE] disabled:opacity-60 transition-colors cursor-pointer"
+                  className="flex-1 inline-flex items-center justify-center rounded-xl border border-[#E6D194] bg-[#FFF9E2] px-6 py-2.5 text-sm font-medium text-[#4C373A] hover:bg-[#F9E8AE] disabled:opacity-60 transition-colors cursor-pointer"
                 >
                   Close
                 </button>
@@ -2808,10 +2808,10 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                   type="submit"
                   disabled={submittingRsvp}
                   data-testid="submit-rsvp-dialog-button"
-                  className="inline-flex items-center gap-2 rounded-xl bg-[#4D0A14] px-6 py-2.5 text-sm font-medium text-[#FAF5EC] hover:bg-[#63111D] disabled:opacity-60 transition-colors cursor-pointer"
+                  className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[#4D0A14] px-6 py-2.5 text-sm font-medium text-[#FAF5EC] hover:bg-[#63111D] disabled:opacity-60 transition-colors cursor-pointer"
                 >
                   <Send className="w-4 h-4 text-[#DFBE7B]" aria-hidden="true" />
-                  {submittingRsvp ? 'Sending…' : 'Send RSVP'}
+                  {submittingRsvp ? 'Sending…' : 'Send'}
                 </button>
               </div>
             </form>
