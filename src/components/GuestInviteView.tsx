@@ -2475,9 +2475,7 @@ export const GuestInviteView: React.FC<GuestInviteViewProps> = ({
                         Please grace us with your presence at the celebrations.
                       </p>
                       <p className="mt-1 sm:mt-1.5 font-editorial italic text-[17px] sm:text-[22px] lg:text-[24px] [@media(max-height:700px)]:text-[15.5px] text-[#4C373A] leading-snug text-balance">
-                        {!isGeneric && invitation.displayGuestName && !isReferencePreview
-                          ? `Your presence is the greatest blessing, dear ${invitation.displayGuestName}`
-                          : 'Your presence is the greatest blessing'}
+                        'Your presence is the greatest blessing.'
                       </p>
 
                       <AlpanaDivider className="w-32 sm:w-40 mx-auto my-1.5 sm:my-2.5 [@media(max-height:740px)]:my-1.5 text-[#C89D54]" />
